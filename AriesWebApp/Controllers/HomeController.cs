@@ -1,11 +1,10 @@
-﻿using AriesWebApp.Models;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Hyperledger.Aries.Configuration;
 using Hyperledger.Aries.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
+using AriesWebApp.Models;
 
 namespace AriesWebApp.Controllers
 {
@@ -13,35 +12,28 @@ namespace AriesWebApp.Controllers
     {
         private readonly IWalletService _walletService;
         private readonly IProvisioningService _provisioningService;
-        private readonly AgentOptions _agentOptions;
+        private readonly AgentOptions _walletOptions;
 
         public HomeController(
             IWalletService walletService,
             IProvisioningService provisioningService,
-            IOptions<AgentOptions> agentOptions
-            )
+            IOptions<AgentOptions> walletOptions)
         {
             _walletService = walletService;
             _provisioningService = provisioningService;
-            _agentOptions = agentOptions.Value;
+            _walletOptions = walletOptions.Value;
         }
 
         public async Task<IActionResult> Index()
         {
             var wallet = await _walletService.GetWalletAsync(
-                configuration: _agentOptions.WalletConfiguration,
-                credentials: _agentOptions.WalletCredentials);
+                _walletOptions.WalletConfiguration,
+                _walletOptions.WalletCredentials);
 
             var provisioning = await _provisioningService.GetProvisioningAsync(wallet);
             return View(provisioning);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

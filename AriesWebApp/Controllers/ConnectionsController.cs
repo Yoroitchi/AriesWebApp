@@ -1,4 +1,10 @@
-﻿using AriesWebApp.Models;
+﻿using System;
+using System.Globalization;
+using System.Reactive.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AriesWebApp.Models;
 using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Configuration;
 using Hyperledger.Aries.Contracts;
@@ -12,13 +18,7 @@ using Hyperledger.Aries.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System;
-using System.Globalization;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+
 
 namespace AriesWebApp.Controllers
 {
@@ -32,8 +32,6 @@ namespace AriesWebApp.Controllers
         private readonly IAgentProvider _agentContextProvider;
         private readonly IMessageService _messageService;
         private readonly AgentOptions _agentOptions;
-        //private readonly WalletConfiguration _walletConfiguration;
-        //private readonly WalletCredentials _walletCredentials;
 
         public ConnectionsController(
             IEventAggregator eventAggregator,
@@ -44,8 +42,7 @@ namespace AriesWebApp.Controllers
             IAgentProvider agentContextProvider,
             IMessageService messageService,
             IOptions<AgentOptions> agentOptions)
-            //IOptions<WalletConfiguration> walletConfiguration,
-            //IOptions<WalletCredentials> walletCredentials)
+
         {
             _eventAggregator = eventAggregator;
             _connectionService = connectionService;
@@ -55,8 +52,7 @@ namespace AriesWebApp.Controllers
             _agentContextProvider = agentContextProvider;
             _messageService = messageService;
             _agentOptions = agentOptions.Value;
-            //_walletConfiguration = walletConfiguration.Value;
-            //_walletCredentials = walletCredentials.Value;
+
         }
 
         [HttpGet]
@@ -85,10 +81,8 @@ namespace AriesWebApp.Controllers
         {
             var context = await _agentContextProvider.GetContextAsync();
             var invite = MessageUtils.DecodeMessageFromUrlFormat<ConnectionInvitationMessage>(model.InvitationDetails);
-
             var (request, record) = await _connectionService.CreateRequestAsync(context, invite);
-
-            await _messageService.SendAsync(context.Wallet, request, invite.RecipientKeys[0], record.Endpoint.Uri);
+            await _messageService.SendAsync(context.Wallet, request, record);
 
             return RedirectToAction("Index");
         }

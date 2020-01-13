@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Hyperledger.Aries.Storage;
+using Hyperledger.Aries.Features.BasicMessage;
+using Hyperledger.Aries.Features.TrustPing;
 
 namespace AriesWebApp
 {
@@ -20,8 +23,7 @@ namespace AriesWebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(option => option.EnableEndpointRouting = false);
-            services.AddControllersWithViews();
+            services.AddMvc();
             services.AddLogging();
 
             //Register agent framework dependy service and handlers
@@ -30,14 +32,15 @@ namespace AriesWebApp
                 builder.RegisterAgent(option =>
                 {
                     option.AgentName = "LAVOILA";
-                    option.WalletConfiguration.Id = "SONID";
-                    option.WalletCredentials.Key = "SAKEY" ;
+                    option.WalletConfiguration = new WalletConfiguration { Id = "WebAgentWallet" };
+                    option.WalletCredentials = new WalletCredentials { Key = "MyWalletKey" };
                     option.EndpointUri = "http://localhost:7000";
                 });
                 
             });
-            
 
+            services.AddSingleton<DefaultBasicMessageHandler>();
+            services.AddSingleton<DefaultTrustPingMessageHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,9 +55,10 @@ namespace AriesWebApp
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            app.UseJdenticon();
+
             app.UseStaticFiles();
             app.UseAriesFramework();
+            app.UseJdenticon();
             app.UseRouting();
 
             app.UseAuthorization();

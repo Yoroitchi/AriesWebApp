@@ -1,4 +1,5 @@
-﻿namespace AriesWebApp.Models
+﻿using System;
+namespace AriesWebApp.Models
 {
     public class LaunchAppViewModel
     {
