@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Hyperledger.Aries.Features.IssueCredential;
 
 namespace AriesWebApp.Models
 {
     public class CredentialsViewModel
     {
-        public IEnumerable<CredentialViewModel> Credentials { get; set; }
+        public IEnumerable<CredentialRecord> Credentials { get; set; }
     }
 }

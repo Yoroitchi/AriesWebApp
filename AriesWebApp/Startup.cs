@@ -6,8 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Hyperledger.Aries.Storage;
-using Hyperledger.Aries.Features.BasicMessage;
-using Hyperledger.Aries.Features.TrustPing;
+using Hyperledger.Indy.PoolApi;
+using Hyperledger.Indy.DidApi;
+using Hyperledger.Indy.LedgerApi;
 
 namespace AriesWebApp
 {
@@ -31,16 +32,16 @@ namespace AriesWebApp
             {
                 builder.RegisterAgent(option =>
                 {
-                    option.AgentName = "LAVOILA";
-                    option.WalletConfiguration = new WalletConfiguration { Id = "WebAgentWallet" };
-                    option.WalletCredentials = new WalletCredentials { Key = "MyWalletKey" };
+                    option.AgentName = "MyEpicAgent";
+                    option.WalletConfiguration = new WalletConfiguration { Id = "MyEpicWallet" };
+                    option.WalletCredentials = new WalletCredentials { Key = "MyEpicKey" };
+                    option.IssuerDid = "Th7MpTaRZVRYnPiabds81Y";
+                    option.IssuerKeySeed = "000000000000000000000000Steward1";
+                    option.GenesisFilename = "AriesTest.txn";
+                    option.PoolName = "AriesTest";
                     option.EndpointUri = "http://localhost:7000";
                 });
-                
             });
-
-            services.AddSingleton<DefaultBasicMessageHandler>();
-            services.AddSingleton<DefaultTrustPingMessageHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +56,6 @@ namespace AriesWebApp
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
             app.UseStaticFiles();
             app.UseAriesFramework();
             app.UseJdenticon();
