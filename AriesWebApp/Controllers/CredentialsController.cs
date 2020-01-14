@@ -112,7 +112,6 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> SendCredDef()
         {
-
             var agentContext = await _agentContextProvider.GetContextAsync();
             var record = await _provisioningService.GetProvisioningAsync(await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials));
             Console.WriteLine(record.IssuerDid);
@@ -123,13 +122,13 @@ namespace AriesWebApp.Controllers
             Console.WriteLine(schemaName);
 
             //promoting the did to TRUSTEE role
-            await Ledger.SignAndSubmitRequestAsync(await agentContext.Pool, agentContext.Wallet, _agentOptions.IssuerDid,
-               await Ledger.BuildNymRequestAsync(_agentOptions.IssuerDid, _agentOptions.IssuerDid, "~7TYfekw4GUagBnBVCqPjiC", null, "TRUSTEE"));
+            //await Ledger.SignAndSubmitRequestAsync(await agentContext.Pool, agentContext.Wallet, _agentOptions.IssuerDid,
+            // await Ledger.BuildNymRequestAsync(_agentOptions.IssuerDid, _agentOptions.IssuerDid, "~7TYfekw4GUagBnBVCqPjiC", null, "TRUSTEE"));
 
             //Create and register a dummy schema using previous fields
             var schemaId = await _schemaService.CreateSchemaAsync(agentContext, schemaName, schemaVersion, schemaAttrNames);
 
-            //await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(5));
             return RedirectToAction("Index");
         }
     }

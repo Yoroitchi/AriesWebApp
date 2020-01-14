@@ -1,0 +1,34 @@
+﻿@model SchemaViewModel
+
+    <a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="CreateSchema">Create new Schema</a>
+
+@if(Model.Schemas.Any())
+{
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Version</th>
+            <th scope="col">Created</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Schemas)
+        {
+            <tr>
+                <td>
+                    <a asp-area="" asp-controller="Schema" asp-action="Details" asp-route-id="@item.Name">@(item.Name)</a>
+                </td>
+                <td>
+                    @item.Version
+                </td>
+                <td>
+                    @item.CreatedAtUtc.Value.ToLocalTime()
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+
+
