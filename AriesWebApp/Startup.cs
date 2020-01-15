@@ -32,6 +32,7 @@ namespace AriesWebApp
             {
                 builder.RegisterAgent(option =>
                 {
+
                     option.AgentName = "MyEpicAgent";
                     option.WalletConfiguration = new WalletConfiguration { Id = "MyEpicWallet" };
                     option.WalletCredentials = new WalletCredentials { Key = "MyEpicKey" };

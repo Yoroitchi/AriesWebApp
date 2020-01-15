@@ -22,14 +22,14 @@ namespace AriesWebApp.Controllers
     {
         private readonly IWalletService _walletService;
         private readonly ISchemaService _schemaService;
-        private readonly IAgentProvider _agentProvider;
+        private readonly IAgentProvider _agentContextProvider;
         private readonly IProvisioningService _provisioningService;
         private readonly IWalletRecordService _walletRecordService;
         private readonly AgentOptions _agentOptions;
         public SchemaController(
             IWalletService walletService,
             ISchemaService schemaService,
-            IAgentProvider agentProvider,
+            IAgentProvider agentContextProvider,
             IProvisioningService provisioningService,
             IWalletRecordService walletRecordService,
             IOptions<AgentOptions> agentOptions
@@ -37,7 +37,7 @@ namespace AriesWebApp.Controllers
         {
             _walletService = walletService;
             _schemaService = schemaService;
-            _agentProvider = agentProvider;
+            _agentContextProvider = agentContextProvider;
             _provisioningService = provisioningService;
             _walletRecordService = walletRecordService;
             _agentOptions = agentOptions.Value;
@@ -56,11 +56,11 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateSchema()
         {
-            var agentContext = await _agentProvider.GetContextAsync();
+            var agentContext = await _agentContextProvider.GetContextAsync();
             var record = await _provisioningService.GetProvisioningAsync(await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials));
 
             //The fields of the future schema 
-            var schemaName = $"Test-Schema-{Guid.NewGuid().ToString("N")}";
+            var schemaName = $"Schema-{Guid.NewGuid().ToString("N")}";
             var schemaVersion = "1.0";
             var schemaAttrNames = new[] { "test_attr_1", "test_attr_2", "test_attr_3", "test_attr_4" };
 
@@ -72,6 +72,8 @@ namespace AriesWebApp.Controllers
             var schemaId = await _schemaService.CreateSchemaAsync(agentContext, _agentOptions.IssuerDid, schemaName, schemaVersion, schemaAttrNames);
 
             await Task.Delay(TimeSpan.FromSeconds(5));
+
+            //TODO: Need a CreateSchemaView
             return RedirectToAction("Index");
         }
 
@@ -82,10 +84,20 @@ namespace AriesWebApp.Controllers
 
             var model = new SchemaDetailViewModel
             {
-                Schema = await _walletRecordService.GetAsync<SchemaRecord>(walletContext, id)
+                Schema = await _walletRecordService.GetAsync<SchemaRecord>(walletContext, id),
+                AssociateCredDefinition = await _schemaService.ListCredentialDefinitionsAsync(walletContext)
             };
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SendCredDef(string id)
+        {
+            var walletContext = await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials);
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag1", false, 100);
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            return RedirectToAction("Details", "Schema", new { id });
+        }
     }
 }
