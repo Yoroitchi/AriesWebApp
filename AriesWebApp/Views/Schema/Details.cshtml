@@ -1,0 +1,27 @@
+﻿@using Hyperledger.Aries.Features.IssueCredential
+@model SchemaDetailViewModel
+
+    <a class="btn btn-primary mt-3" role="button" asp-controller="Schema">Edit Schema</a>
+
+<table class="col mt-2">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Attributes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Model.Schema.Name
+            </td>
+            @foreach (var attr in Model.Schema.AttributeNames)
+            {
+                <td>
+                    @attr
+                </td>
+            }
+
+        </tr>
+    </tbody>
+</table>

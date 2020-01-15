@@ -144,7 +144,7 @@ namespace AriesWebApp.Controllers
                     SearchQuery.Equal(nameof(BasicMessageRecord.ConnectionId), id), null, 10),
                 TrustPingSuccess = trustPingSuccess
             };
-
+            
             return View(model);
         }
 

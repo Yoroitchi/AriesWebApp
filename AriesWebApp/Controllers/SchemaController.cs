@@ -12,6 +12,7 @@ using Hyperledger.Aries.Storage;
 using Hyperledger.Aries.Configuration;
 using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Agents;
+using Hyperledger.Aries.Models.Records;
 using Hyperledger.Indy.LedgerApi;
 using AriesWebApp.Models;
 
@@ -23,12 +24,14 @@ namespace AriesWebApp.Controllers
         private readonly ISchemaService _schemaService;
         private readonly IAgentProvider _agentProvider;
         private readonly IProvisioningService _provisioningService;
+        private readonly IWalletRecordService _walletRecordService;
         private readonly AgentOptions _agentOptions;
         public SchemaController(
             IWalletService walletService,
             ISchemaService schemaService,
             IAgentProvider agentProvider,
             IProvisioningService provisioningService,
+            IWalletRecordService walletRecordService,
             IOptions<AgentOptions> agentOptions
             )
         {
@@ -36,6 +39,7 @@ namespace AriesWebApp.Controllers
             _schemaService = schemaService;
             _agentProvider = agentProvider;
             _provisioningService = provisioningService;
+            _walletRecordService = walletRecordService;
             _agentOptions = agentOptions.Value;
         }
 
@@ -58,7 +62,7 @@ namespace AriesWebApp.Controllers
             //The fields of the future schema 
             var schemaName = $"Test-Schema-{Guid.NewGuid().ToString("N")}";
             var schemaVersion = "1.0";
-            var schemaAttrNames = new[] { "test_attr_1", "test_attr_2" };
+            var schemaAttrNames = new[] { "test_attr_1", "test_attr_2", "test_attr_3", "test_attr_4" };
 
             //promoting the did to TRUSTEE role
             await Ledger.SignAndSubmitRequestAsync(await agentContext.Pool, agentContext.Wallet, _agentOptions.IssuerDid,
@@ -70,5 +74,18 @@ namespace AriesWebApp.Controllers
             await Task.Delay(TimeSpan.FromSeconds(5));
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            var walletContext = await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials);
+
+            var model = new SchemaDetailViewModel
+            {
+                Schema = await _walletRecordService.GetAsync<SchemaRecord>(walletContext, id)
+            };
+            return View(model);
+        }
+
     }
 }
