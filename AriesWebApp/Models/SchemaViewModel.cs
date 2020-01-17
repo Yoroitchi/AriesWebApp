@@ -14,5 +14,6 @@ namespace AriesWebApp.Models
     public class SchemaDetailViewModel
     {
         public SchemaRecord Schema { get; set; }
+        public IEnumerable<DefinitionRecord> AssociateCredDefinition { get; set; }
     }
 }

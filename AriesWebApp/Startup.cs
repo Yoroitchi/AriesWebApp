@@ -32,14 +32,14 @@ namespace AriesWebApp
             {
                 builder.RegisterAgent(option =>
                 {
-                    option.AgentName = "MyEpicAgent";
-                    option.WalletConfiguration = new WalletConfiguration { Id = "MyEpicWallet" };
+
+                    option.AgentName = "MyEpicAgent5000";
+                    option.WalletConfiguration = new WalletConfiguration { Id = "MyEpicWallet5000" };
                     option.WalletCredentials = new WalletCredentials { Key = "MyEpicKey" };
-                    option.IssuerDid = "Th7MpTaRZVRYnPiabds81Y";
-                    option.IssuerKeySeed = "000000000000000000000000Steward1";
                     option.GenesisFilename = "AriesTest.txn";
                     option.PoolName = "AriesTest";
-                    option.EndpointUri = "http://localhost:7000";
+                    option.EndpointUri = "http://localhost:5000";
+                    option.ProtocolVersion = 2;
                 });
             });
         }

@@ -1,19 +1,21 @@
 ﻿@using Hyperledger.Aries.Features.IssueCredential
+@using Hyperledger.Aries.Models.Records
 @model SchemaDetailViewModel
 
-    <a class="btn btn-primary mt-3" role="button" asp-controller="Schema">Edit Schema</a>
+<a class="btn btn-primary mt-3" role="button" asp-controller="Schema">Edit Schema</a>
+<a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="SendCredDefToLedger" asp-route-id="@Model.Schema.Id">Create associated credential definition</a>
 
 <table class="col mt-2">
     <thead>
         <tr>
-            <th scope="col">Name</th>
+            <th scope="col">Schema Id</th>
             <th scope="col">Attributes</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>
-                @Model.Schema.Name
+                @Model.Schema.Id
             </td>
             @foreach (var attr in Model.Schema.AttributeNames)
             {
@@ -25,3 +27,34 @@
         </tr>
     </tbody>
 </table>
+@if (Model.AssociateCredDefinition.Any())
+{
+    <table class="col mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Credential definition Id</th>
+                <th scope="col">Date</th>
+                <th scope="col">Number of credentials emitted</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.AssociateCredDefinition)
+            {
+                @if (@item.SchemaId.Equals(Model.Schema.Id))
+                {
+                    <tr>
+                        <td>
+                            @item.Id
+                        </td>
+                        <td>
+                            @item.CreatedAtUtc.Value.ToLocalTime()
+                        </td>
+                        <td>
+                            @item.MaxCredentialCount
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
