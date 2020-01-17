@@ -62,8 +62,15 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
-            
 
+            var credOffMsg = await _mess
+
+
+            var connectionsRecord = await _credentialService.ListAsync(agentContext);
+            foreach (var connection in connectionsRecord)
+            {
+                var offerMsg = _credentialService.ProcessOfferAsync(agentContext, CredentialOfferMessage, connection);
+            }
             //return RedirectToAction("Index", "Schema");
             return View(new CredentialsViewModel
             {
