@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hyperledger.Aries.Features.IssueCredential;
-
+using AriesWebApp.Models;
 
 namespace AriesWebApp.Models
 {

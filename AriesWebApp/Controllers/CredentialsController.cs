@@ -1,23 +1,14 @@
 ﻿using System;
-using System.Globalization;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using AriesWebApp.Models;
-using Hyperledger.Aries.Contracts;
-using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Configuration;
+using Hyperledger.Aries.Contracts;
+using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Storage;
-using Hyperledger.Aries.Models.Records;
-using Hyperledger.Indy.PoolApi;
-using Hyperledger.Indy.DidApi;
-using Hyperledger.Indy.LedgerApi;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using AriesWebApp.Models;
 
 
 namespace AriesWebApp.Controllers
@@ -63,21 +54,41 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> Index()
         {
 
-
-            return RedirectToAction("Index", "Schema");
-            /*return View(new CredentialsViewModel
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            //return RedirectToAction("Index", "Schema");
+            return View(new CredentialsViewModel
             {
-                Credentials = 
-            });*/
+                Credentials = await _credentialService.ListAsync(agentContext)
+            });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCredDef()
+        [HttpPost]
+        public async Task<IActionResult> SendOfferCredential(string connectionId, string credDefId)
         {
-            
-            return RedirectToAction("Index");
-        }
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var walletContext = await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials);
 
+            //var schemaAttrNames = new[] { "Name", "test_attr_2", "test_attr_3", "test_attr_4" };
+            var offerConfig = new OfferConfiguration
+            {
+                CredentialDefinitionId = credDefId,
+                IssuerDid = connectionId,
+                CredentialAttributeValues = new [] 
+                { 
+                    new CredentialPreviewAttribute("Name","r1"), 
+                    new CredentialPreviewAttribute("test_attr_2", "test_attr_2"),
+                    new CredentialPreviewAttribute("test_attr_3", "test_attr_3"),
+                    new CredentialPreviewAttribute("test_attr_4", "test_attr_4")
+                }
+            };
+
+            (var credOfferMsg, var credRecord) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
+            Console.WriteLine("Credential preview : " + credOfferMsg.CredentialPreview);
+            Console.WriteLine("Credential ID: " + credRecord.CredentialId);
+
+            await _walletRecordService.AddAsync<CredentialRecord>(walletContext, credRecord);
+            return RedirectToAction("Details", "Connections", new { id = connectionId});
+        }
         
     }
 }

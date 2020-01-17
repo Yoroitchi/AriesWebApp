@@ -6,9 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Hyperledger.Aries.Storage;
-using Hyperledger.Indy.PoolApi;
-using Hyperledger.Indy.DidApi;
-using Hyperledger.Indy.LedgerApi;
+
 
 namespace AriesWebApp
 {
@@ -41,6 +39,7 @@ namespace AriesWebApp
                     option.GenesisFilename = "AriesTest.txn";
                     option.PoolName = "AriesTest";
                     option.EndpointUri = "http://localhost:7000";
+                    option.ProtocolVersion = 2;
                 });
             });
         }

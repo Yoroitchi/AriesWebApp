@@ -62,7 +62,7 @@ namespace AriesWebApp.Controllers
             //The fields of the future schema 
             var schemaName = $"Schema-{Guid.NewGuid().ToString("N")}";
             var schemaVersion = "1.0";
-            var schemaAttrNames = new[] { "test_attr_1", "test_attr_2", "test_attr_3", "test_attr_4" };
+            var schemaAttrNames = new[] { "Name", "test_attr_2", "test_attr_3", "test_attr_4" };
 
             //promoting the did to TRUSTEE role
             await Ledger.SignAndSubmitRequestAsync(await agentContext.Pool, agentContext.Wallet, _agentOptions.IssuerDid,
@@ -73,7 +73,7 @@ namespace AriesWebApp.Controllers
 
             await Task.Delay(TimeSpan.FromSeconds(5));
 
-            //TODO: Need a CreateSchemaView
+            //TODO: Need a CreateSchemaView => Not necessary for the PoC
             return RedirectToAction("Index");
         }
 
@@ -91,7 +91,7 @@ namespace AriesWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SendCredDef(string id)
+        public async Task<IActionResult> SendCredDefToLedger(string id)
         {
             var walletContext = await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials);
             var agentContext = await _agentContextProvider.GetContextAsync();

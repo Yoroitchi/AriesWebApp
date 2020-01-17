@@ -3,19 +3,19 @@
 @model SchemaDetailViewModel
 
 <a class="btn btn-primary mt-3" role="button" asp-controller="Schema">Edit Schema</a>
-<a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="SendCredDef" asp-route-id="@Model.Schema.Id">Create associated credential definition</a>
+<a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="SendCredDefToLedger" asp-route-id="@Model.Schema.Id">Create associated credential definition</a>
 
 <table class="col mt-2">
     <thead>
         <tr>
-            <th scope="col">Name</th>
+            <th scope="col">Schema Id</th>
             <th scope="col">Attributes</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>
-                @Model.Schema.Name
+                @Model.Schema.Id
             </td>
             @foreach (var attr in Model.Schema.AttributeNames)
             {
@@ -32,9 +32,9 @@
     <table class="col mt-3">
         <thead>
             <tr>
-                <th scope="col">Id</th>
+                <th scope="col">Credential definition Id</th>
                 <th scope="col">Date</th>
-                <th scope="col">Number of credentials</th>
+                <th scope="col">Number of credentials emitted</th>
             </tr>
         </thead>
         <tbody>
