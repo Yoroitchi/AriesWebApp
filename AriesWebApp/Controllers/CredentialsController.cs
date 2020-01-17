@@ -3,6 +3,7 @@ using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Configuration;
 using Hyperledger.Aries.Contracts;
 using Hyperledger.Aries.Features.IssueCredential;
+using Hyperledger.Aries.Features.DidExchange;
 using Hyperledger.Aries.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -26,6 +27,8 @@ namespace AriesWebApp.Controllers
         private readonly IProvisioningService _provisioningService;
         private readonly ISchemaService _schemaService;
         private readonly ILedgerService _ledgerService;
+        private readonly IConnectionService _connectionService;
+        private readonly IMessageService _messageService;
 
         public CredentialsController(
             IWalletService walletService,
@@ -36,7 +39,9 @@ namespace AriesWebApp.Controllers
             ISchemaService schemaService,
             IPoolService poolService,
             IProvisioningService provisioningService,
-            ILedgerService ledgerService
+            ILedgerService ledgerService,
+            IConnectionService connectionService,
+            IMessageService messageService
             )
         {
             _walletService = walletService;
@@ -48,6 +53,8 @@ namespace AriesWebApp.Controllers
             _poolService = poolService;
             _provisioningService = provisioningService;
             _ledgerService = ledgerService;
+            _connectionService = connectionService;
+            _messageService = messageService;
         }
 
         [HttpGet]
@@ -55,6 +62,7 @@ namespace AriesWebApp.Controllers
         {
 
             var agentContext = await _agentContextProvider.GetContextAsync();
+
             //return RedirectToAction("Index", "Schema");
             return View(new CredentialsViewModel
             {
@@ -66,13 +74,13 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> SendOfferCredential(string connectionId, string credDefId)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
-            var walletContext = await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials);
+            var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
 
             //var schemaAttrNames = new[] { "Name", "test_attr_2", "test_attr_3", "test_attr_4" };
             var offerConfig = new OfferConfiguration
             {
                 CredentialDefinitionId = credDefId,
-                IssuerDid = connectionId,
+                IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
                 CredentialAttributeValues = new [] 
                 { 
                     new CredentialPreviewAttribute("Name","r1"), 
@@ -83,10 +91,12 @@ namespace AriesWebApp.Controllers
             };
 
             (var credOfferMsg, var credRecord) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
-            Console.WriteLine("Credential preview : " + credOfferMsg.CredentialPreview);
-            Console.WriteLine("Credential ID: " + credRecord.CredentialId);
+            await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
+            Console.WriteLine("credOfferMsg : " + credOfferMsg.Id);
+            // Console.WriteLine("Credential preview : " + credOfferMsg.CredentialPreview);
+            //Console.WriteLine("Credential ID: " + credRecord.CredentialId);
 
-            await _walletRecordService.AddAsync<CredentialRecord>(walletContext, credRecord);
+            //await _walletRecordService.AddAsync<CredentialRecord>(walletContext, credRecord);
             return RedirectToAction("Details", "Connections", new { id = connectionId});
         }
         
