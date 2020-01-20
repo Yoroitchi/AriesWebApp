@@ -63,11 +63,50 @@ namespace AriesWebApp.Controllers
 
             var agentContext = await _agentContextProvider.GetContextAsync();
 
-            //return RedirectToAction("Index", "Schema");
             return View(new CredentialsViewModel
             {
                 Credentials = await _credentialService.ListAsync(agentContext)
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProcessRequest(string id)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
+            var connectionRecord = await _connectionService.GetAsync(agentContext, credentialRecord.ConnectionId);
+            (var cred, _) = await _credentialService.CreateCredentialAsync(agentContext : agentContext, credentialId : id);
+            await _messageService.SendAsync(agentContext.Wallet, cred, connectionRecord);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProcessOffer(string id)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
+            var connectionId = credentialRecord.ConnectionId;
+            var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
+            (var request, _) = await _credentialService.CreateRequestAsync(agentContext, id);
+            await _messageService.SendAsync(agentContext.Wallet, request, connectionRecord);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
+            var model = new CredentialViewModel
+            {
+                Name = credentialRecord.CredentialId,
+                CreatedAt = credentialRecord.CreatedAtUtc.Value.ToLocalTime(),
+                State = credentialRecord.State,
+                CredentialAttributesValues = credentialRecord.CredentialAttributesValues
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -76,27 +115,30 @@ namespace AriesWebApp.Controllers
             var agentContext = await _agentContextProvider.GetContextAsync();
             var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
 
-            //var schemaAttrNames = new[] { "Name", "test_attr_2", "test_attr_3", "test_attr_4" };
+            //{ "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
             var offerConfig = new OfferConfiguration
             {
                 CredentialDefinitionId = credDefId,
                 IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
                 CredentialAttributeValues = new [] 
                 { 
-                    new CredentialPreviewAttribute("Name","r1"), 
-                    new CredentialPreviewAttribute("test_attr_2", "test_attr_2"),
-                    new CredentialPreviewAttribute("test_attr_3", "test_attr_3"),
-                    new CredentialPreviewAttribute("test_attr_4", "test_attr_4")
+                    new CredentialPreviewAttribute("type","passport"), 
+                    new CredentialPreviewAttribute("passportNumber", $"{Guid.NewGuid().ToString("N")}"),
+                    new CredentialPreviewAttribute("issuerCountryCode", "CH"),
+                    new CredentialPreviewAttribute("firstname", "John"),
+                    new CredentialPreviewAttribute("familyname","Doe"),
+                    new CredentialPreviewAttribute("birthdate","1968-02-12T:15:00:00Z"),
+                    new CredentialPreviewAttribute("citizenship","CH"),
+                    new CredentialPreviewAttribute("sex","M"),
+                    new CredentialPreviewAttribute("placeOfBirth", "Paris"),
+                    new CredentialPreviewAttribute("issuingDate", "20-01-2020"),
+                    new CredentialPreviewAttribute("expiryDate", "20-01-2030")
                 }
             };
 
-            (var credOfferMsg, var credRecord) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
+            (var credOfferMsg, _) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
             await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
-            Console.WriteLine("credOfferMsg : " + credOfferMsg.Id);
-            // Console.WriteLine("Credential preview : " + credOfferMsg.CredentialPreview);
-            //Console.WriteLine("Credential ID: " + credRecord.CredentialId);
 
-            //await _walletRecordService.AddAsync<CredentialRecord>(walletContext, credRecord);
             return RedirectToAction("Details", "Connections", new { id = connectionId});
         }
         

@@ -60,9 +60,9 @@ namespace AriesWebApp.Controllers
             var record = await _provisioningService.GetProvisioningAsync(await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials));
 
             //The fields of the future schema 
-            var schemaName = $"Schema-{Guid.NewGuid().ToString("N")}";
-            var schemaVersion = "1.0";
-            var schemaAttrNames = new[] { "Name", "test_attr_2", "test_attr_3", "test_attr_4" };
+            var schemaName = "fictional-passeport";
+            var schemaVersion = "1.1";
+            var schemaAttrNames = new[] { "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" };
 
             //promoting the did to TRUSTEE role
             await Ledger.SignAndSubmitRequestAsync(await agentContext.Pool, agentContext.Wallet, _agentOptions.IssuerDid,
@@ -95,7 +95,7 @@ namespace AriesWebApp.Controllers
         {
             var walletContext = await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials);
             var agentContext = await _agentContextProvider.GetContextAsync();
-            await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag1", false, 100);
+            await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag", false, 100);
             await Task.Delay(TimeSpan.FromSeconds(2));
             return RedirectToAction("Details", "Schema", new { id });
         }
