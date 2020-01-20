@@ -1,14 +1,9 @@
 ﻿using System;
 using Hyperledger.Aries.Agents;
-using Hyperledger.Aries.Configuration;
-using Hyperledger.Aries.Contracts;
 using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Features.DidExchange;
-using Hyperledger.Aries.Storage;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using AriesWebApp.Models;
 
 
@@ -17,42 +12,20 @@ namespace AriesWebApp.Controllers
 
     public class CredentialsController : Controller
     {
-        //Here the local Interfaces of the controller
-        private readonly IWalletService _walletService;
         private readonly ICredentialService _credentialService;
-        private readonly IWalletRecordService _walletRecordService;
         private readonly IAgentProvider _agentContextProvider;
-        private readonly IPoolService _poolService;
-        private readonly AgentOptions _agentOptions;
-        private readonly IProvisioningService _provisioningService;
-        private readonly ISchemaService _schemaService;
-        private readonly ILedgerService _ledgerService;
         private readonly IConnectionService _connectionService;
         private readonly IMessageService _messageService;
 
         public CredentialsController(
-            IWalletService walletService,
             ICredentialService credentialService,
-            IWalletRecordService walletRecordService,
             IAgentProvider agentContextProvider,
-            IOptions<AgentOptions> agentOptions,
-            ISchemaService schemaService,
-            IPoolService poolService,
-            IProvisioningService provisioningService,
-            ILedgerService ledgerService,
             IConnectionService connectionService,
             IMessageService messageService
             )
         {
-            _walletService = walletService;
             _credentialService = credentialService;
-            _walletRecordService = walletRecordService;
             _agentContextProvider = agentContextProvider;
-            _agentOptions = agentOptions.Value;
-            _schemaService = schemaService;
-            _poolService = poolService;
-            _provisioningService = provisioningService;
-            _ledgerService = ledgerService;
             _connectionService = connectionService;
             _messageService = messageService;
         }

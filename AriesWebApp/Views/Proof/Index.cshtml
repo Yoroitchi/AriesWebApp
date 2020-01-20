@@ -1,0 +1,35 @@
+﻿@model ProofsViewModel
+
+
+<table class="col mt-4">
+    <thead>
+        <tr>
+                <th scope="col">Proof record Id</th>
+                <th scope="col">Connection Id</th>
+                <th scope="col">Created at</th>
+                <th scope="col">State</th>
+        </tr>
+    </thead>
+    @if (Model.Proofs.Any())
+    {
+     <tbody>
+        @foreach(var item in Model.Proofs)
+        {
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.ConnectionId
+                </td>
+                <td>
+                    @item.CreatedAtUtc.Value.ToLocalTime()
+                </td>
+                <td>
+                    @item.State
+                </td>
+            </tr>
+        }
+     </tbody>
+    }
+</table>
