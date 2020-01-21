@@ -89,7 +89,7 @@ namespace AriesWebApp.Controllers
             var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
 
             //{ "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
-            /* var offerConfig = new OfferConfiguration
+             var offerConfig = new OfferConfiguration
              {
                  CredentialDefinitionId = credDefId,
                  IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
@@ -107,13 +107,13 @@ namespace AriesWebApp.Controllers
                      new CredentialPreviewAttribute("issuingDate", "20-01-2020"),
                      new CredentialPreviewAttribute("expiryDate", "20-01-2030")
                  }
-             };*/
-            var offerConfig = new OfferConfiguration
+             };
+            /*var offerConfig = new OfferConfiguration
             {
                 CredentialDefinitionId = credDefId,
                 IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
                 CredentialAttributeValues = new[] { new CredentialPreviewAttribute("first_name", "Test"), new CredentialPreviewAttribute("last_name", "Holder") }
-            };
+            };*/
 
             (var credOfferMsg, _) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
             await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
