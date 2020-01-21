@@ -40,7 +40,7 @@
              else
              {
                 <td>
-                    <button class="btn btn-primary mt-3" CommandArgument="@item.Id" onclick="location.href='@Url.Action("ProoveName", "Proof")'">Send Proof name</button>
+                    <button class="btn btn-primary mt-3"onclick="location.href='@Url.Action("ProoveName", "Proof", new { proofRecordId = item.Id })'">Send Proof name</button>
                 </td>
              }
          </tr>
