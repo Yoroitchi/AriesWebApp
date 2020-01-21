@@ -39,9 +39,6 @@ namespace AriesWebApp.Controllers
         {
             var agentContext = await _agentProvider.GetContextAsync();
 
-            //Some tests
-            var proof = await _proofService.GetAsync(agentContext, "781d20af-664d-460f-b61d-d9f20d827ea8");
-            Console.WriteLine("Proof request : " + proof.RequestJson);
 
             return View(new ProofsViewModel
             {
