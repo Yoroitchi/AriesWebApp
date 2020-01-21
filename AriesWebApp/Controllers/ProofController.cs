@@ -119,7 +119,7 @@ namespace AriesWebApp.Controllers
                 Nonce = await AnonCreds.GenerateNonceAsync(),
                 RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
                     {
-                        {"Onsefichedecettestring", new ProofAttributeInfo {Name = "first_name"}}
+                        {"Onsefichedecettestring", new ProofAttributeInfo {Name = "firstname"}}
                     }
             };
 
