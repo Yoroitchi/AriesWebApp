@@ -1,6 +1,4 @@
-﻿@using Hyperledger.Aries.Features.IssueCredential
-@using Hyperledger.Aries.Models.Records
-@model SchemaDetailViewModel
+﻿@model SchemaDetailViewModel
 
 <a class="btn btn-primary mt-3" role="button" asp-controller="Schema">Edit Schema</a>
 <a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="SendCredDefToLedger" asp-route-id="@Model.Schema.Id">Create associated credential definition</a>
@@ -27,7 +25,7 @@
         </tr>
     </tbody>
 </table>
-@if (Model.AssociateCredDefinition.Any())
+@if(Model.AssociateCredDefinition.Any())
 {
     <table class="col mt-3">
         <thead>

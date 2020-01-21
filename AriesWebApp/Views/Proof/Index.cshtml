@@ -1,0 +1,39 @@
+﻿@model ProofsViewModel
+
+    <a class="btn btn-primary mt-3" role="button" asp-controller="Proof" asp-action="CreateProofNameRequest">Create new Proof name request</a>
+
+<table class="col mt-5">
+    <thead>
+        <tr>
+                <th scope="col">Proof record Id</th>
+                <th scope="col">Connection Id</th>
+                <th scope="col">Created at</th>
+                <th scope="col">State</th>
+        </tr>
+    </thead>
+    @if (Model.Proofs.Any())
+    {
+     <tbody>
+        @foreach(var item in Model.Proofs)
+        {
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.ConnectionId
+                </td>
+                <td>
+                    @item.CreatedAtUtc.Value.ToLocalTime()
+                </td>
+                <td>
+                    @item.State
+                </td>
+                <td>
+                    <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofNameView", "Proof")'">Send Proof name request</button>
+                </td>
+            </tr>
+        }
+     </tbody>
+    }
+</table>
