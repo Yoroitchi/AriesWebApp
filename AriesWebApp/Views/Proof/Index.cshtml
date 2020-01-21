@@ -1,7 +1,8 @@
 ﻿@model ProofsViewModel
 
+    <a class="btn btn-primary mt-3" role="button" asp-controller="Proof" asp-action="CreateProofNameRequest">Create new Proof name request</a>
 
-<table class="col mt-4">
+<table class="col mt-5">
     <thead>
         <tr>
                 <th scope="col">Proof record Id</th>
@@ -27,6 +28,9 @@
                 </td>
                 <td>
                     @item.State
+                </td>
+                <td>
+                    <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofNameView", "Proof")'">Send Proof name request</button>
                 </td>
             </tr>
         }

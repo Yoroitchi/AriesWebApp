@@ -54,7 +54,8 @@ namespace AriesWebApp.Controllers
             var record = await _provisioningService.GetProvisioningAsync(await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials));
 
             //The fields of the future schema 
-            var schemaName = "fictional-passeport";
+            var schemaName = "fictional-passeport-"+$"{ Guid.NewGuid().ToString("N")}";
+            
             var schemaVersion = "1.1";
             var schemaAttrNames = new[] { "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" };
 
