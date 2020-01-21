@@ -89,24 +89,30 @@ namespace AriesWebApp.Controllers
             var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
 
             //{ "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
+            /* var offerConfig = new OfferConfiguration
+             {
+                 CredentialDefinitionId = credDefId,
+                 IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
+                 CredentialAttributeValues = new [] 
+                 { 
+                     new CredentialPreviewAttribute("type","passport"), 
+                     new CredentialPreviewAttribute("passportNumber", $"{Guid.NewGuid().ToString("N")}"),
+                     new CredentialPreviewAttribute("issuerCountryCode", "CH"),
+                     new CredentialPreviewAttribute("firstname", "John"),
+                     new CredentialPreviewAttribute("familyname","Doe"),
+                     new CredentialPreviewAttribute("birthdate","1968-02-12T:15:00:00Z"),
+                     new CredentialPreviewAttribute("citizenship","CH"),
+                     new CredentialPreviewAttribute("sex","M"),
+                     new CredentialPreviewAttribute("placeOfBirth", "Paris"),
+                     new CredentialPreviewAttribute("issuingDate", "20-01-2020"),
+                     new CredentialPreviewAttribute("expiryDate", "20-01-2030")
+                 }
+             };*/
             var offerConfig = new OfferConfiguration
             {
                 CredentialDefinitionId = credDefId,
                 IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
-                CredentialAttributeValues = new [] 
-                { 
-                    new CredentialPreviewAttribute("type","passport"), 
-                    new CredentialPreviewAttribute("passportNumber", $"{Guid.NewGuid().ToString("N")}"),
-                    new CredentialPreviewAttribute("issuerCountryCode", "CH"),
-                    new CredentialPreviewAttribute("firstname", "John"),
-                    new CredentialPreviewAttribute("familyname","Doe"),
-                    new CredentialPreviewAttribute("birthdate","1968-02-12T:15:00:00Z"),
-                    new CredentialPreviewAttribute("citizenship","CH"),
-                    new CredentialPreviewAttribute("sex","M"),
-                    new CredentialPreviewAttribute("placeOfBirth", "Paris"),
-                    new CredentialPreviewAttribute("issuingDate", "20-01-2020"),
-                    new CredentialPreviewAttribute("expiryDate", "20-01-2030")
-                }
+                CredentialAttributeValues = new[] { new CredentialPreviewAttribute("first_name", "Test"), new CredentialPreviewAttribute("last_name", "Holder") }
             };
 
             (var credOfferMsg, _) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);

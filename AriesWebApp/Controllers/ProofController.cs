@@ -8,7 +8,7 @@ using Hyperledger.Aries.Features.PresentProof;
 using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Storage;
 using Hyperledger.Aries.Features.DidExchange;
-using Hyperledger.Aries.Utils;
+using Hyperledger.Indy.AnonCredsApi;
 using AriesWebApp.Models;
 
 namespace AriesWebApp.Controllers
@@ -40,35 +40,10 @@ namespace AriesWebApp.Controllers
         {
             var agentContext = await _agentProvider.GetContextAsync();
 
-            //Some tests
-            var proof = await _proofService.GetAsync(agentContext, "781d20af-664d-460f-b61d-d9f20d827ea8");
-            Console.WriteLine("Proof request : " + proof.RequestJson);
-
             return View(new ProofsViewModel
             {
                 Proofs = await _proofService.ListAsync(agentContext),
             });
-        }
-
-
-        public async Task<RequestPresentationMessage> CreateProofNameMessage(string connectionId)
-        {
-            var agentContext = await _agentProvider.GetContextAsync();
-            
-            var proofRequest = new ProofRequest
-            {
-                Name = "ProoveYourName" + connectionId,
-                Version = "1.1",
-                //Adding a new proof attribut => { "", new ProofAttributeInfo { } },
-                RequestedAttributes = new Dictionary<string, ProofAttributeInfo>()
-                {
-                    { "name", new ProofAttributeInfo {Name = "NameAttribute" } },
-                },
-            };
-
-            (var msg, _) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
-
-            return msg;
         }
 
         [HttpGet]
@@ -89,19 +64,34 @@ namespace AriesWebApp.Controllers
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
             var connectionRecord = await _connectionService.GetAsync(agentContext, proofRecord.ConnectionId);
             var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
-            var requestedCred = new RequestedCredentials();
-            foreach(var requestedAttr in request.RequestedAttributes)
+            var requestedCredentials = new RequestedCredentials();
+            foreach (var requestedAttribute in request.RequestedAttributes)
             {
-                var cred = await _proofService.ListCredentialsForProofRequestAsync(agentContext, request, requestedAttr.Key);
+                var credentials = await _proofService.ListCredentialsForProofRequestAsync(agentContext, request, requestedAttribute.Key);
 
-                requestedCred.RequestedAttributes.Add(requestedAttr.Key, new RequestedAttribute
-                {
-                    CredentialId = cred.First().CredentialInfo.Referent,
-                    Revealed = true
-                });
+                requestedCredentials.RequestedAttributes.Add(requestedAttribute.Key, 
+                    new RequestedAttribute
+                    {
+                        CredentialId = credentials.First().CredentialInfo.Referent,
+                        Revealed = true
+                    });
             }
 
-            var (proofMsg, record) = await _proofService.CreatePresentationAsync(agentContext, proofRecordId, requestedCred);
+            /*foreach (var requestedAttribute in request.RequestedPredicates)
+            {
+                var credentials =
+                    await _proofService.ListCredentialsForProofRequestAsync(agentContext, request,
+                        requestedAttribute.Key);
+
+                requestedCredentials.RequestedPredicates.Add(requestedAttribute.Key,
+                    new RequestedAttribute
+                    {
+                        CredentialId = credentials.First().CredentialInfo.Referent,
+                        Revealed = true
+                    });
+            }*/
+
+            var (proofMsg, record) = await _proofService.CreatePresentationAsync(agentContext, proofRecordId, requestedCredentials);
             await _messageService.SendAsync(agentContext.Wallet, proofMsg, connectionRecord);
 
             return RedirectToAction("Index");
@@ -111,11 +101,31 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> SendProofNameRequest(string connectionId)
         {
             var agentContext = await _agentProvider.GetContextAsync();
-            var proofNameRequest = await CreateProofNameMessage(connectionId);
             var connectionRecord = await _walletRecordService.GetAsync<ConnectionRecord>(agentContext.Wallet, connectionId);
+            var proofNameRequest = await CreateProofNameMessage(connectionRecord);
             await _messageService.SendAsync(agentContext.Wallet, proofNameRequest, connectionRecord);
 
             return RedirectToAction("Index");
+        }
+
+        public async Task<RequestPresentationMessage> CreateProofNameMessage(ConnectionRecord connectionRecord)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var name = connectionRecord.Alias?.Name ?? connectionRecord.Id;
+            var proofRequest = new ProofRequest
+            {
+                Name = "ProofReq",
+                Version = "1.0",
+                Nonce = await AnonCreds.GenerateNonceAsync(),
+                RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
+                    {
+                        {"Onsefichedecettestring", new ProofAttributeInfo {Name = "first_name"}}
+                    }
+            };
+
+            (var msg, _) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+
+            return msg;
         }
     }
 }
