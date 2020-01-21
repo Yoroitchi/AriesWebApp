@@ -1,4 +1,5 @@
 ﻿using Hyperledger.Aries.Features.IssueCredential;
+using System.Collections.Generic;
 using System;
 
 namespace AriesWebApp.Models
@@ -10,5 +11,7 @@ namespace AriesWebApp.Models
         public DateTime CreatedAt { get; set; }
 
         public CredentialState State { get; set; }
+
+        public IEnumerable<CredentialPreviewAttribute> CredentialAttributesValues { get; set; }
     }
 }

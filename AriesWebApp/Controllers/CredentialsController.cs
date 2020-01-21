@@ -62,24 +62,53 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
-
-            var credOffMsg = await _mess
-
-
-            var connectionsRecord = await _credentialService.ListAsync(agentContext);
-            foreach (var connection in connectionsRecord)
-            {
-                var offerMsg = _credentialService.ProcessOfferAsync(agentContext, CredentialOfferMessage, connection);
-            }
-            //return RedirectToAction("Index", "Schema");
+  
             return View(new CredentialsViewModel
             {
                 Credentials = await _credentialService.ListAsync(agentContext),
-                //CredentialOfferMessages = await 
             });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ProcessRequest(string id)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
+            var connectionId = credentialRecord.ConnectionId;
+            var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
+            (var cred, _) = await _credentialService.CreateCredentialAsync(agentContext, id);
+            await _messageService.SendAsync(agentContext.Wallet, cred, connectionRecord);
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProcessOffer(string id)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
+            var connectionId = credentialRecord.ConnectionId;
+            var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
+            (var request, _) = await _credentialService.CreateRequestAsync(agentContext, id);
+            await _messageService.SendAsync(agentContext.Wallet, request, connectionRecord);
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
+            var model = new CredentialViewModel
+            {
+                Name = credentialRecord.CredentialId,
+                CreatedAt = credentialRecord.CreatedAtUtc.Value.ToLocalTime(),
+                State = credentialRecord.State,
+                CredentialAttributesValues = credentialRecord.CredentialAttributesValues
+            };
+            return View(model);
+        }
         //Issuer issue at first, a credential offer
         [HttpPost]
         public async Task<IActionResult> SendOfferCredential(string connectionId, string credDefId)
@@ -105,10 +134,7 @@ namespace AriesWebApp.Controllers
             
             (var credOfferMsg, var credRecord) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
             await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
-            //Console.WriteLine("Credential preview : " + credOfferMsg.CredentialPreview);
-            //Console.WriteLine("Credential ID: " + credRecord.CredentialId);
 
-            //await _walletRecordService.AddAsync<CredentialRecord>(walletContext, credRecord);
             return RedirectToAction("Details", "Connections", new { id = connectionId });
         }
 
