@@ -8,6 +8,7 @@ using Hyperledger.Aries.Features.PresentProof;
 using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Storage;
 using Hyperledger.Aries.Features.DidExchange;
+using Hyperledger.Aries.Utils;
 using AriesWebApp.Models;
 
 namespace AriesWebApp.Controllers
@@ -71,7 +72,7 @@ namespace AriesWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SendProofNameView()
+        public async Task<IActionResult> SendProofRequestNameView()
         {
             var agentContext = await _agentProvider.GetContextAsync();
             var model = new ConnectionsViewModel
@@ -79,6 +80,31 @@ namespace AriesWebApp.Controllers
                 Connections = await _connectionService.ListAsync(agentContext)
             };
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProoveName(string proofRecordId)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
+            var connectionRecord = await _connectionService.GetAsync(agentContext, proofRecord.ConnectionId);
+            var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
+            var requestedCred = new RequestedCredentials();
+            foreach(var requestedAttr in request.RequestedAttributes)
+            {
+                var cred = await _proofService.ListCredentialsForProofRequestAsync(agentContext, request, requestedAttr.Key);
+
+                requestedCred.RequestedAttributes.Add(requestedAttr.Key, new RequestedAttribute
+                {
+                    CredentialId = cred.First().CredentialInfo.Referent,
+                    Revealed = true
+                });
+            }
+
+            var (proofMsg, record) = await _proofService.CreatePresentationAsync(agentContext, proofRecordId, requestedCred);
+            await _messageService.SendAsync(agentContext.Wallet, proofMsg, connectionRecord);
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
