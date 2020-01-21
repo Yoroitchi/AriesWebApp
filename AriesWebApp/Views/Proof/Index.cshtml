@@ -16,23 +16,34 @@
      <tbody>
         @foreach(var item in Model.Proofs)
         {
-            <tr>
+         <tr>
+             <td>
+                 @item.Id
+             </td>
+             <td>
+                 @item.ConnectionId
+             </td>
+             <td>
+                 @item.CreatedAtUtc.Value.ToLocalTime()
+             </td>
+             <td>
+                 @item.State
+             </td>
+
+             @if (item.ConnectionId == null)
+             {
+                 <td>
+                     <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofRequestNameView", "Proof")'">Send Proof name request</button>
+                 </td>
+
+             }
+             else
+             {
                 <td>
-                    @item.Id
+                    <button class="btn btn-primary mt-3" CommandArgument="@item.Id" onclick="location.href='@Url.Action("ProoveName", "Proof")'">Send Proof name</button>
                 </td>
-                <td>
-                    @item.ConnectionId
-                </td>
-                <td>
-                    @item.CreatedAtUtc.Value.ToLocalTime()
-                </td>
-                <td>
-                    @item.State
-                </td>
-                <td>
-                    <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofNameView", "Proof")'">Send Proof name request</button>
-                </td>
-            </tr>
+             }
+         </tr>
         }
      </tbody>
     }
