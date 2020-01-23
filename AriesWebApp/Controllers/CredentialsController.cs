@@ -17,18 +17,21 @@ namespace AriesWebApp.Controllers
         private readonly IAgentProvider _agentContextProvider;
         private readonly IConnectionService _connectionService;
         private readonly IMessageService _messageService;
+        private readonly ISchemaService _schemaService;
 
         public CredentialsController(
             ICredentialService credentialService,
             IAgentProvider agentContextProvider,
             IConnectionService connectionService,
-            IMessageService messageService
+            IMessageService messageService,
+            ISchemaService schemaService
             )
         {
             _credentialService = credentialService;
             _agentContextProvider = agentContextProvider;
             _connectionService = connectionService;
             _messageService = messageService;
+            _schemaService = schemaService;
         }
 
         [HttpGet]
@@ -51,7 +54,7 @@ namespace AriesWebApp.Controllers
             var connectionRecord = await _connectionService.GetAsync(agentContext, credentialRecord.ConnectionId);
             (var cred, _) = await _credentialService.CreateCredentialAsync(agentContext: agentContext, credentialId: id);
             await _messageService.SendAsync(agentContext.Wallet, cred, connectionRecord);
-
+            
             return RedirectToAction("Index");
         }
 
@@ -78,7 +81,7 @@ namespace AriesWebApp.Controllers
                 Name = credentialRecord.CredentialId,
                 CreatedAt = credentialRecord.CreatedAtUtc.Value.ToLocalTime(),
                 State = credentialRecord.State,
-                CredentialAttributesValues = credentialRecord.CredentialAttributesValues
+                CredentialAttributesValues = credentialRecord.CredentialAttributesValues,
             };
             return View(model);
         }

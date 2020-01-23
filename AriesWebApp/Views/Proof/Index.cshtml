@@ -1,6 +1,5 @@
 ﻿@model ProofsViewModel
-
-<a class="btn btn-primary mt-3" role="button" asp-controller="Proof" asp-action="CreateProofNameRequest">Create new Proof name request</a>
+<!--<a class="btn btn-primary mt-3" role="button" asp-controller="Proof" asp-action="CreateProofNameRequest">Create new Proof name request</a>-->
 
 <table class="col mt-5">
     <thead>
@@ -14,36 +13,36 @@
     @if (Model.Proofs.Any())
     {
         <tbody>
-            @foreach (var item in Model.Proofs)
+            @foreach (var item in Model.Proofs.OrderBy(x => x.CreatedAtUtc))
             {
-                <tr>
+            <tr>
+                <td>
+                    @item.Id
+                </td>
+                <td>
+                    @item.ConnectionId
+                </td>
+                <td>
+                    @item.CreatedAtUtc.Value.ToLocalTime()
+                </td>
+                <td>
+                    @item.State
+                </td>
+
+                @if (item.ConnectionId == null)
+                {
                     <td>
-                        <a asp-area="" asp-controller="Proof" asp-action="Details" asp-route-proofRecordId="@item.Id">@(item.Id)</a>
-                    </td>
-                    <td>
-                        @item.ConnectionId
-                    </td>
-                    <td>
-                        @item.CreatedAtUtc.Value.ToLocalTime()
-                    </td>
-                    <td>
-                        @item.State
+                        <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofRequestNameView", "Proof")'">Send Proof name request</button>
                     </td>
 
-                    @if (item.ConnectionId == null)
-                    {
-                        <td>
-                            <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofRequestNameView", "Proof")'">Send Proof name request</button>
-                        </td>
-
-                    }
-                    else
-                    {
-                        <td>
-                            <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("ProoveName", "Proof", new { proofRecordId = item.Id })'">Send Proof name</button>
-                        </td>
-                    }
-                </tr>
+                }
+                else
+                {
+                    <td>
+                        <button class="btn btn-primary mt-3" CommandArgument="@item.Id" onclick="location.href='@Url.Action("ProoveName", "Proof")'">Send Proof name</button>
+                    </td>
+                }
+            </tr>
             }
         </tbody>
     }

@@ -51,7 +51,6 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> CreateSchema()
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
-            var record = await _provisioningService.GetProvisioningAsync(await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials));
 
             //The fields of the future schema 
             var schemaName = "fictional-passeport-" + $"{ Guid.NewGuid().ToString("N")}";
@@ -64,9 +63,8 @@ namespace AriesWebApp.Controllers
              await Ledger.BuildNymRequestAsync(_agentOptions.IssuerDid, _agentOptions.IssuerDid, "~7TYfekw4GUagBnBVCqPjiC", null, "TRUSTEE"));
 
             //Create and register a dummy schema using previous fields
-            var schemaId = await _schemaService.CreateSchemaAsync(agentContext, _agentOptions.IssuerDid, schemaName, schemaVersion, schemaAttrNames);
+            await _schemaService.CreateSchemaAsync(agentContext, _agentOptions.IssuerDid, schemaName, schemaVersion, schemaAttrNames);
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
 
             //TODO: Need a CreateSchemaView => Not necessary for the PoC
             return RedirectToAction("Index");
@@ -88,10 +86,8 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> SendCredDefToLedger(string id)
         {
-            var walletContext = await _walletService.GetWalletAsync(_agentOptions.WalletConfiguration, _agentOptions.WalletCredentials);
             var agentContext = await _agentContextProvider.GetContextAsync();
-            await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag", false, 100);
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag", false, 0);
             return RedirectToAction("Details", "Schema", new { id });
         }
     }
