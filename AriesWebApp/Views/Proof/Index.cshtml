@@ -1,50 +1,49 @@
 ﻿@model ProofsViewModel
-
-    <a class="btn btn-primary mt-3" role="button" asp-controller="Proof" asp-action="CreateProofNameRequest">Create new Proof name request</a>
+<!--<a class="btn btn-primary mt-3" role="button" asp-controller="Proof" asp-action="CreateProofNameRequest">Create new Proof name request</a>-->
 
 <table class="col mt-5">
     <thead>
         <tr>
-                <th scope="col">Proof record Id</th>
-                <th scope="col">Connection Id</th>
-                <th scope="col">Created at</th>
-                <th scope="col">State</th>
+            <th scope="col">Proof record Id</th>
+            <th scope="col">Connection Id</th>
+            <th scope="col">Created at</th>
+            <th scope="col">State</th>
         </tr>
     </thead>
     @if (Model.Proofs.Any())
     {
-     <tbody>
-        @foreach(var item in Model.Proofs)
-        {
-         <tr>
-             <td>
-                 @item.Id
-             </td>
-             <td>
-                 @item.ConnectionId
-             </td>
-             <td>
-                 @item.CreatedAtUtc.Value.ToLocalTime()
-             </td>
-             <td>
-                 @item.State
-             </td>
-
-             @if (item.ConnectionId == null)
-             {
-                 <td>
-                     <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofRequestNameView", "Proof")'">Send Proof name request</button>
-                 </td>
-
-             }
-             else
-             {
+        <tbody>
+            @foreach (var item in Model.Proofs.OrderBy(x => x.CreatedAtUtc))
+            {
+            <tr>
                 <td>
-                    <button class="btn btn-primary mt-3" CommandArgument="@item.Id" onclick="location.href='@Url.Action("ProoveName", "Proof")'">Send Proof name</button>
+                    @item.Id
                 </td>
-             }
-         </tr>
-        }
-     </tbody>
+                <td>
+                    @item.ConnectionId
+                </td>
+                <td>
+                    @item.CreatedAtUtc.Value.ToLocalTime()
+                </td>
+                <td>
+                    @item.State
+                </td>
+
+                @if (item.ConnectionId == null)
+                {
+                    <td>
+                        <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofRequestNameView", "Proof")'">Send Proof name request</button>
+                    </td>
+
+                }
+                else
+                {
+                    <td>
+                        <button class="btn btn-primary mt-3" CommandArgument="@item.Id" onclick="location.href='@Url.Action("ProoveName", "Proof")'">Send Proof name</button>
+                    </td>
+                }
+            </tr>
+            }
+        </tbody>
     }
 </table>

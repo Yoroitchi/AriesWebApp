@@ -14,7 +14,6 @@ namespace AriesWebApp.Models
 
         public IEnumerable<CredentialPreviewAttribute> CredentialAttributesValues { get; set; }
         
-        public CredentialRecord Record { get; set; }
 
     }
 }
