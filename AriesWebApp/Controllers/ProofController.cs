@@ -67,11 +67,9 @@ namespace AriesWebApp.Controllers
             var requestedCredentials = new RequestedCredentials();
             foreach (var requestedAttribute in request.RequestedAttributes)
             {
-                var credentials =
-                    await _proofService.ListCredentialsForProofRequestAsync(agentContext, request,
-                        requestedAttribute.Key);
+                var credentials = await _proofService.ListCredentialsForProofRequestAsync(agentContext, request, requestedAttribute.Key);
 
-                requestedCredentials.RequestedAttributes.Add(requestedAttribute.Key,
+                requestedCredentials.RequestedAttributes.Add(requestedAttribute.Key, 
                     new RequestedAttribute
                     {
                         CredentialId = credentials.First().CredentialInfo.Referent,
@@ -79,7 +77,7 @@ namespace AriesWebApp.Controllers
                     });
             }
 
-            foreach (var requestedAttribute in request.RequestedPredicates)
+            /*foreach (var requestedAttribute in request.RequestedPredicates)
             {
                 var credentials =
                     await _proofService.ListCredentialsForProofRequestAsync(agentContext, request,
@@ -91,7 +89,7 @@ namespace AriesWebApp.Controllers
                         CredentialId = credentials.First().CredentialInfo.Referent,
                         Revealed = true
                     });
-            }
+            }*/
 
             var (proofMsg, record) = await _proofService.CreatePresentationAsync(agentContext, proofRecordId, requestedCredentials);
             await _messageService.SendAsync(agentContext.Wallet, proofMsg, connectionRecord);

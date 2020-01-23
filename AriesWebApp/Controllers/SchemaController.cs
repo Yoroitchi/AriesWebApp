@@ -58,7 +58,7 @@ namespace AriesWebApp.Controllers
 
             var schemaVersion = "1.1";
             var schemaAttrNames = new[] { "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" };
-            //var schemaAttrNames = new[] { "first_name", "last_name" };
+            //var schemaAttrNames = new [] { "first_name", "last_name" };
             //promoting the did to TRUSTEE role
             await Ledger.SignAndSubmitRequestAsync(await agentContext.Pool, agentContext.Wallet, _agentOptions.IssuerDid,
              await Ledger.BuildNymRequestAsync(_agentOptions.IssuerDid, _agentOptions.IssuerDid, "~7TYfekw4GUagBnBVCqPjiC", null, "TRUSTEE"));

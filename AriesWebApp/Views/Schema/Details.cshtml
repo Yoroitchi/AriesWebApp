@@ -1,29 +1,38 @@
 ﻿@model SchemaDetailViewModel
-
+@{ 
+    int i = 0;
+}
 <a class="btn btn-primary mt-3" role="button" asp-controller="Schema">Edit Schema</a>
 <a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="SendCredDefToLedger" asp-route-id="@Model.Schema.Id">Create associated credential definition</a>
 
-<table class="col mt-2">
+<table class="table-borderless" cellpadding="10">
     <thead>
         <tr>
             <th scope="col">Schema Id</th>
-            <th scope="col">Attributes</th>
+            <th scope="col">Attributes key</th>
         </tr>
     </thead>
-    <tbody>
-        <tr>
-            <td>
-                @Model.Schema.Id
-            </td>
-            @foreach (var attr in Model.Schema.AttributeNames)
-            {
+    <tbody >
+        @foreach (var attr in Model.Schema.AttributeNames)
+        {
+            <tr >
+                @if (i == 0)
+                {
+                    <td>
+                        @Model.Schema.Id
+                    </td>
+                    i++;
+                }
+                else
+                {
+                    <td></td>
+                }
                 <td>
                     @attr
                 </td>
-            }
-
-        </tr>
-    </tbody>
+            </tr>
+        }
+        </tbody>
 </table>
 @if(Model.AssociateCredDefinition.Any())
 {
