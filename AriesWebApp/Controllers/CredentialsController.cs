@@ -5,6 +5,7 @@ using Hyperledger.Aries.Features.DidExchange;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AriesWebApp.Models;
+using Newtonsoft.Json;
 
 
 namespace AriesWebApp.Controllers
@@ -77,8 +78,7 @@ namespace AriesWebApp.Controllers
                 Name = credentialRecord.CredentialId,
                 CreatedAt = credentialRecord.CreatedAtUtc.Value.ToLocalTime(),
                 State = credentialRecord.State,
-                CredentialAttributesValues = credentialRecord.CredentialAttributesValues,
-                Record = credentialRecord
+                CredentialAttributesValues = credentialRecord.CredentialAttributesValues
             };
             return View(model);
         }
@@ -121,6 +121,14 @@ namespace AriesWebApp.Controllers
 
             return RedirectToAction("Details", "Connections", new { id = connectionId });
         }
+
+
+       /* public async Task<string> GetCredentialJson(CredentialRecord credentialRecord)
+        {
+
+            string credString;
+            return credString;
+        }*/
 
     }
 }

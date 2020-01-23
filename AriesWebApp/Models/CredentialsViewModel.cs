@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hyperledger.Aries.Features.IssueCredential;
-using Hyperledger.Aries.Features.BasicMessage;
-using Hyperledger.Aries.Features.DidExchange;
-using AriesWebApp.Models;
+using Hyperledger.Aries.Features.PresentProof;
+
 
 
 namespace AriesWebApp.Models

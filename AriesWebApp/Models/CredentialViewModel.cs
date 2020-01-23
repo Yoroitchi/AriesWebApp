@@ -13,8 +13,6 @@ namespace AriesWebApp.Models
         public CredentialState State { get; set; }
 
         public IEnumerable<CredentialPreviewAttribute> CredentialAttributesValues { get; set; }
-        
-        public CredentialRecord Record { get; set; }
 
     }
 }
