@@ -98,7 +98,7 @@ namespace AriesWebApp.Controllers
             ViewData["InvitationDetails"] = model.InvitationDetails;
 
             var invite = MessageUtils.DecodeMessageFromUrlFormat<ConnectionInvitationMessage>(model.InvitationDetails);
-
+            
             return View(invite);
         }
 

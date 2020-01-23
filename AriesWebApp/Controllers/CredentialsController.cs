@@ -17,21 +17,19 @@ namespace AriesWebApp.Controllers
         private readonly IAgentProvider _agentContextProvider;
         private readonly IConnectionService _connectionService;
         private readonly IMessageService _messageService;
-        private readonly ISchemaService _schemaService;
+
 
         public CredentialsController(
             ICredentialService credentialService,
             IAgentProvider agentContextProvider,
             IConnectionService connectionService,
-            IMessageService messageService,
-            ISchemaService schemaService
+            IMessageService messageService
             )
         {
             _credentialService = credentialService;
             _agentContextProvider = agentContextProvider;
             _connectionService = connectionService;
             _messageService = messageService;
-            _schemaService = schemaService;
         }
 
         [HttpGet]
@@ -124,6 +122,7 @@ namespace AriesWebApp.Controllers
 
             return RedirectToAction("Details", "Connections", new { id = connectionId });
         }
+
 
 
        /* public async Task<string> GetCredentialJson(CredentialRecord credentialRecord)
