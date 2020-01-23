@@ -5,6 +5,7 @@ using Hyperledger.Aries.Features.DidExchange;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AriesWebApp.Models;
+using Newtonsoft.Json;
 
 
 namespace AriesWebApp.Controllers
@@ -51,8 +52,7 @@ namespace AriesWebApp.Controllers
             var agentContext = await _agentContextProvider.GetContextAsync();
             var credentialRecord = await _credentialService.GetAsync(agentContext, id);
             var connectionRecord = await _connectionService.GetAsync(agentContext, credentialRecord.ConnectionId);
-            var schemaRecord = await _schemaService.GetCredentialDefinitionAsync(agentContext.Wallet, credentialRecord.CredentialDefinitionId);
-            (var cred, _) = await _credentialService.CreateCredentialAsync(agentContext : agentContext, credentialId : id);
+            (var cred, _) = await _credentialService.CreateCredentialAsync(agentContext: agentContext, credentialId: id);
             await _messageService.SendAsync(agentContext.Wallet, cred, connectionRecord);
             
             return RedirectToAction("Index");
@@ -122,9 +122,17 @@ namespace AriesWebApp.Controllers
             (var credOfferMsg, _) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
             await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
 
-            return RedirectToAction("Details", "Connections", new { id = connectionId});
+            return RedirectToAction("Details", "Connections", new { id = connectionId });
         }
-        
+
+
+       /* public async Task<string> GetCredentialJson(CredentialRecord credentialRecord)
+        {
+
+            string credString;
+            return credString;
+        }*/
+
     }
 }
 /* {

@@ -39,11 +39,21 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var agentContext = await _agentProvider.GetContextAsync();
-
             return View(new ProofsViewModel
             {
                 Proofs = await _proofService.ListAsync(agentContext),
             });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string proofRecordId)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var model = new ProofsDetailViewModel
+            {
+                ProofRecord = await _proofService.GetAsync(agentContext, proofRecordId),
+            };
+            return View(model);
         }
 
         [HttpGet]
@@ -77,7 +87,7 @@ namespace AriesWebApp.Controllers
                     });
             }
 
-            /*foreach (var requestedAttribute in request.RequestedPredicates)
+            foreach (var requestedAttribute in request.RequestedPredicates)
             {
                 var credentials =
                     await _proofService.ListCredentialsForProofRequestAsync(agentContext, request,
@@ -89,7 +99,7 @@ namespace AriesWebApp.Controllers
                         CredentialId = credentials.First().CredentialInfo.Referent,
                         Revealed = true
                     });
-            }*/
+            }
 
             var (proofMsg, record) = await _proofService.CreatePresentationAsync(agentContext, proofRecordId, requestedCredentials);
             await _messageService.SendAsync(agentContext.Wallet, proofMsg, connectionRecord);
