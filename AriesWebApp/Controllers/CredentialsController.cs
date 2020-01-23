@@ -74,6 +74,8 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string id)
         {
+            //id is the credential Record Id
+
             var agentContext = await _agentContextProvider.GetContextAsync();
             var credentialRecord = await _credentialService.GetAsync(agentContext, id);
             var model = new CredentialViewModel
@@ -82,8 +84,17 @@ namespace AriesWebApp.Controllers
                 CreatedAt = credentialRecord.CreatedAtUtc.Value.ToLocalTime(),
                 State = credentialRecord.State,
                 CredentialAttributesValues = credentialRecord.CredentialAttributesValues,
+                CredentialRecordId = id
             };
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(string credRecId)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
+
         }
 
         [HttpPost]
