@@ -61,6 +61,7 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> ProcessOffer(string id)
         {
+            //id is the credential Record Id
             var agentContext = await _agentContextProvider.GetContextAsync();
             var credentialRecord = await _credentialService.GetAsync(agentContext, id);
             var connectionId = credentialRecord.ConnectionId;
@@ -89,12 +90,12 @@ namespace AriesWebApp.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Edit(string credRecId)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
-            var credentialRecord = await _credentialService.GetAsync(agentContext, id);
-
+            var credentialRecord = await _credentialService.GetAsync(agentContext, credRecId);
+            return View(credentialRecord);
         }
 
         [HttpPost]
