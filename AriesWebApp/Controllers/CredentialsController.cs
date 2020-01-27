@@ -1,5 +1,7 @@
 ﻿using System;
 using Hyperledger.Aries.Agents;
+using Hyperledger.Aries.Storage;
+using Hyperledger.Aries.Models.Records;
 using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Features.DidExchange;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +19,22 @@ namespace AriesWebApp.Controllers
         private readonly IAgentProvider _agentContextProvider;
         private readonly IConnectionService _connectionService;
         private readonly IMessageService _messageService;
+        private readonly IWalletRecordService _walletRecordService;
 
 
         public CredentialsController(
             ICredentialService credentialService,
             IAgentProvider agentContextProvider,
             IConnectionService connectionService,
-            IMessageService messageService
+            IMessageService messageService,
+            IWalletRecordService walletRecordService
             )
         {
             _credentialService = credentialService;
             _agentContextProvider = agentContextProvider;
             _connectionService = connectionService;
             _messageService = messageService;
+            _walletRecordService = walletRecordService;
         }
 
         [HttpGet]
@@ -123,14 +128,17 @@ namespace AriesWebApp.Controllers
             return RedirectToAction("Details", "Connections", new { id = connectionId });
         }
 
-
-
-       /* public async Task<string> GetCredentialJson(CredentialRecord credentialRecord)
+        [HttpGet]
+        public async Task<IActionResult> CreateOfferFromSchemaId(string schemaId, string connectionId)
         {
-
-            string credString;
-            return credString;
-        }*/
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var schemaRecord = await _walletRecordService.GetAsync<SchemaRecord>(agentContext.Wallet, schemaId);
+            return View(new OfferViewModel
+            {
+                Schema = schemaRecord,
+                ConnectionId = connectionId
+            });
+        }
 
     }
 }
