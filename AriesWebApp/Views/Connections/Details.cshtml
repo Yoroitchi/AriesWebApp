@@ -58,7 +58,14 @@
         <form class="input-group mb-3" asp-controller="Proof" asp-action="SendProofNameRequest">
             <input type="hidden" name="connectionId" value="@Model.Connection.Id" />
             <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="submit">Send Proof Request</button>
+                <button class="btn btn-outline-primary" type="submit">Request a proof of name</button>
+            </div>
+        </form>
+
+        <form class="input-group mb-3" asp-controller="Proof" asp-action="SendOver21ProofRequest">
+            <input type="hidden" name="connectionId" value="@Model.Connection.Id" />
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="submit">Request a proof of Over 21</button>
             </div>
         </form>
     </div>

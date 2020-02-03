@@ -52,9 +52,11 @@ namespace AriesWebApp.Controllers
         {
             var agentContext = await _agentProvider.GetContextAsync();
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
+            var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
             var model = new ProofsDetailViewModel
             {
                 ProofPartial = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson),
+                Name = request.Name
             };
             return View(model);
         }
@@ -176,18 +178,50 @@ namespace AriesWebApp.Controllers
         {
             var agentContext = await _agentProvider.GetContextAsync();
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
-            var request = JsonConvert.DeserializeObject<PartialProof>(proofRecord.RequestJson);
+            var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
             var proof = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
-            /*foreach (var item in request.RequestedProof.RevealedAttributes)
+            bool verified = false;
+            switch (request.Name)
             {
-                Console.WriteLine(item.Value);
-            }*/
-            foreach (var item in proof.RequestedProof.RevealedAttributes)
-            {
-                Console.WriteLine(item.Value);
-            }
-            
+                case "Over21Request":
+                    verified = VerifyOver21(proof); break;
+                case "Over18request":
+                    verified = VerifyOver18(proof); break;
+                default:
+                    break;
+            }            
             return RedirectToAction("Index");
+        }
+
+        public bool VerifyOver21(PartialProof proof)
+        {
+            
+            var now = DateTime.UtcNow;
+            var birth = "";
+            foreach(var item in proof.RequestedProof.RevealedAttributes)
+            {
+                Console.WriteLine(item.Value.Raw);
+                if (item.Key.Equals("birthdate"))
+                {
+                    birth = item.Value.Raw;
+                }
+            }
+            var todate = DateTime.ParseExact(birth, "yyyy-MM-ddT:HH:mm:ssZ", null);
+            var age = now.Year - todate.Year;
+
+            Console.WriteLine(age);
+            if (todate.Date > now.AddYears(-age))
+            {
+                age--;
+                Console.WriteLine(age);
+            }
+                if (age >= 21) return true;
+            else return false;
+        }
+
+        public bool VerifyOver18(PartialProof proof)
+        {
+            return false;
         }
     }
 }

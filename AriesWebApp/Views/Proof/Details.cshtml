@@ -1,7 +1,36 @@
-﻿
+﻿@model ProofsDetailViewModel
 @{
-    ViewData["Title"] = "Details";
+    int i = 0;
 }
 
-<h1>Details</h1>
+<table class="table-borderless" cellpadding="10">
+    <thead>
+        <tr>
+            <th scope="col">Proof name</th>
+            <th scope="col">Attributes Key</th>
+            <th scope="col">Attributes Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var attr in @Model.ProofPartial.RequestedProof.RevealedAttributes)
+        {
+            <tr>
+                @if (i == 0)
+                {
+                    <td>@Model.Name</td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <td>
+                    @attr.Key
+                </td>
+                <td>
+                    @attr.Value.Encoded
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
