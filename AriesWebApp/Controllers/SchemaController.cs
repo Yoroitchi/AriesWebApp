@@ -90,5 +90,16 @@ namespace AriesWebApp.Controllers
             await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag", false, 0);
             return RedirectToAction("Details", "Schema", new { id });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateOfferFromSchema(string connectionId)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            return View(new CreateOfferViewModel
+            {
+                Schemas = await _schemaService.ListSchemasAsync(agentContext.Wallet),
+                ConnectionId = connectionId
+            });
+        }
     }
 }

@@ -1,0 +1,15 @@
+﻿@model CreateOfferViewModel
+
+<table class="table-borderless">
+    @foreach (var schema in Model.Schemas)
+    {
+        <tr>
+            <td>
+                @schema.Name
+            </td>
+            <td>
+                <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("CreateOfferFromSchemaId","Credentials",new { schemaId = @schema.Id, connectionId=@Model.ConnectionId})'">Make an offer</button>
+            </td>
+        </tr>
+    }
+</table>
