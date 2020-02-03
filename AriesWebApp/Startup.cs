@@ -31,9 +31,9 @@ namespace AriesWebApp
                 builder.RegisterAgent(option =>
                 {
 
-                    option.AgentName = "MyEpicAgent5000";
-                    option.WalletConfiguration = new WalletConfiguration { Id = "MyEpicWallet5000" };
-                    option.WalletCredentials = new WalletCredentials { Key = "MyEpicKey" };
+                    option.AgentName = "Holder";
+                    option.WalletConfiguration = new WalletConfiguration { Id = "Holder" };
+                    option.WalletCredentials = new WalletCredentials { Key = "HolderKey" };
                     option.GenesisFilename = "AriesTest.txn";
                     option.PoolName = "AriesTest";
                     option.EndpointUri = "http://localhost:5000";

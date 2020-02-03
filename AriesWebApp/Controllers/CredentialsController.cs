@@ -5,7 +5,6 @@ using Hyperledger.Aries.Features.DidExchange;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AriesWebApp.Models;
-using Newtonsoft.Json;
 
 
 namespace AriesWebApp.Controllers
