@@ -10,6 +10,7 @@ using Hyperledger.Aries.Storage;
 using Hyperledger.Aries.Features.DidExchange;
 using Hyperledger.Indy.AnonCredsApi;
 using AriesWebApp.Models;
+using System.Threading;
 
 namespace AriesWebApp.Controllers
 {
@@ -42,6 +43,7 @@ namespace AriesWebApp.Controllers
             return View(new ProofsViewModel
             {
                 Proofs = await _proofService.ListAsync(agentContext),
+
             });
         }
 
@@ -49,9 +51,10 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> Details(string proofRecordId)
         {
             var agentContext = await _agentProvider.GetContextAsync();
+            var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
             var model = new ProofsDetailViewModel
             {
-                ProofRecord = await _proofService.GetAsync(agentContext, proofRecordId),
+                ProofPartial = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson),
             };
             return View(model);
         }
@@ -68,7 +71,7 @@ namespace AriesWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ProoveName(string proofRecordId)
+        public async Task<IActionResult> SendProof(string proofRecordId)
         {
             var agentContext = await _agentProvider.GetContextAsync();
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
@@ -97,7 +100,7 @@ namespace AriesWebApp.Controllers
                     new RequestedAttribute
                     {
                         CredentialId = credentials.First().CredentialInfo.Referent,
-                        Revealed = true
+                        Revealed = false
                     });
             }
 
@@ -129,13 +132,62 @@ namespace AriesWebApp.Controllers
                 Nonce = await AnonCreds.GenerateNonceAsync(),
                 RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
                     {
-                        {"Onsefichedecettestring", new ProofAttributeInfo {Name = "firstname"}}
+                        {"firstname-required", new ProofAttributeInfo {Name = "firstname"}}
                     }
             };
 
             (var msg, _) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
 
             return msg;
+        }
+
+        public async Task<RequestPresentationMessage> CreateOver21ProofMessage(ConnectionRecord connectionRecord)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var name = connectionRecord.Alias?.Name ?? connectionRecord.Id;
+            var proofRequest = new ProofRequest
+            {
+                Name = "Over21Request",
+                Version = "1.0",
+                Nonce = await AnonCreds.GenerateNonceAsync(),
+                RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
+                {
+                    { "birthdate", new ProofAttributeInfo { Name = "birthdate" } }
+                },
+            };
+
+            (var msg, _) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+
+            return msg;
+        }
+
+        public async Task<IActionResult> SendOver21ProofRequest(string connectionId)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var connectionRecord = await _walletRecordService.GetAsync<ConnectionRecord>(agentContext.Wallet, connectionId);
+            var proofNameRequest = await CreateOver21ProofMessage(connectionRecord);
+            await _messageService.SendAsync(agentContext.Wallet, proofNameRequest, connectionRecord);
+
+            return RedirectToAction("Index");
+        }
+    
+        [HttpGet]
+        public async Task<IActionResult> VerifyProof(string proofRecordId)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
+            var request = JsonConvert.DeserializeObject<PartialProof>(proofRecord.RequestJson);
+            var proof = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
+            /*foreach (var item in request.RequestedProof.RevealedAttributes)
+            {
+                Console.WriteLine(item.Value);
+            }*/
+            foreach (var item in proof.RequestedProof.RevealedAttributes)
+            {
+                Console.WriteLine(item.Value);
+            }
+            
+            return RedirectToAction("Index");
         }
     }
 }

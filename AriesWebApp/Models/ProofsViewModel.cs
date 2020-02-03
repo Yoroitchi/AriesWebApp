@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Hyperledger.Aries.Features.PresentProof;
-using Hyperledger.Aries.Features.IssueCredential;
+
 
 namespace AriesWebApp.Models
 {
@@ -15,6 +12,6 @@ namespace AriesWebApp.Models
 
     public class ProofsDetailViewModel
     {
-        public ProofRecord ProofRecord { get; set; }
+        public PartialProof ProofPartial { get; set; }
     }
 }
