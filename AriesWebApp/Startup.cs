@@ -31,14 +31,12 @@ namespace AriesWebApp
                 builder.RegisterAgent(option =>
                 {
 
-                    option.AgentName = "Issuer";
-                    option.WalletConfiguration = new WalletConfiguration { Id = "Issuer" };
-                    option.WalletCredentials = new WalletCredentials { Key = "IssuerKey" };
-                    option.IssuerDid = "Th7MpTaRZVRYnPiabds81Y";
-                    option.IssuerKeySeed = "000000000000000000000000Steward1";
+                    option.AgentName = "Verifier";
+                    option.WalletConfiguration = new WalletConfiguration { Id = "Verifier" };
+                    option.WalletCredentials = new WalletCredentials { Key = "VerifierKey" };
                     option.GenesisFilename = "AriesTest.txn";
                     option.PoolName = "AriesTest";
-                    option.EndpointUri = "http://localhost:7000";
+                    option.EndpointUri = "http://localhost:8000";
                     option.ProtocolVersion = 2;
                 });
             });
