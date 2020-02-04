@@ -73,46 +73,6 @@ namespace AriesWebApp.Controllers
             return View(model);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> SendProof(string proofRecordId)
-        {
-            var agentContext = await _agentProvider.GetContextAsync();
-            var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
-            var connectionRecord = await _connectionService.GetAsync(agentContext, proofRecord.ConnectionId);
-            var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
-            var requestedCredentials = new RequestedCredentials();
-            foreach (var requestedAttribute in request.RequestedAttributes)
-            {
-                var credentials = await _proofService.ListCredentialsForProofRequestAsync(agentContext, request, requestedAttribute.Key);
-
-                requestedCredentials.RequestedAttributes.Add(requestedAttribute.Key, 
-                    new RequestedAttribute
-                    {
-                        CredentialId = credentials.First().CredentialInfo.Referent,
-                        Revealed = true
-                    });
-            }
-
-            foreach (var requestedAttribute in request.RequestedPredicates)
-            {
-                var credentials =
-                    await _proofService.ListCredentialsForProofRequestAsync(agentContext, request,
-                        requestedAttribute.Key);
-
-                requestedCredentials.RequestedPredicates.Add(requestedAttribute.Key,
-                    new RequestedAttribute
-                    {
-                        CredentialId = credentials.First().CredentialInfo.Referent,
-                        Revealed = false
-                    });
-            }
-
-            var (proofMsg, record) = await _proofService.CreatePresentationAsync(agentContext, proofRecordId, requestedCredentials);
-            await _messageService.SendAsync(agentContext.Wallet, proofMsg, connectionRecord);
-
-            return RedirectToAction("Index");
-        }
-
         [HttpPost]
         public async Task<IActionResult> SendProofNameRequest(string connectionId)
         {
