@@ -107,7 +107,7 @@ namespace AriesWebApp.Controllers
                      new CredentialPreviewAttribute("issuerCountryCode", "CH"),
                      new CredentialPreviewAttribute("firstname", "John"),
                      new CredentialPreviewAttribute("familyname","Doe"),
-                     new CredentialPreviewAttribute("birthdate","1968-02-12T:15:00:00Z"),
+                     new CredentialPreviewAttribute("birthdate","2001-02-04T:15:00:00Z"),
                      new CredentialPreviewAttribute("citizenship","CH"),
                      new CredentialPreviewAttribute("sex","M"),
                      new CredentialPreviewAttribute("placeOfBirth", "Paris"),

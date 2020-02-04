@@ -52,6 +52,7 @@ namespace AriesWebApp.Controllers
         {
             var agentContext = await _agentProvider.GetContextAsync();
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
+            Console.WriteLine(proofRecord.RequestJson);
             var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
             var model = new ProofsDetailViewModel
             {
@@ -158,7 +159,9 @@ namespace AriesWebApp.Controllers
                 },
             };
 
-            (var msg, _) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+            (var msg, var proofRecord) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+            proofRecord.ConnectionId = connectionRecord.Id;
+            await _walletRecordService.UpdateAsync(agentContext.Wallet, proofRecord);
 
             return msg;
         }
@@ -188,8 +191,14 @@ namespace AriesWebApp.Controllers
                 case "Over18request":
                     verified = VerifyOver18(proof); break;
                 default:
-                    break;
-            }            
+                        break;
+            }
+            if (!verified)
+            {
+                proofRecord.State = ProofState.Rejected;
+                await _walletRecordService.UpdateAsync(agentContext.Wallet, proofRecord);
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -210,12 +219,9 @@ namespace AriesWebApp.Controllers
             var age = now.Year - todate.Year;
 
             Console.WriteLine(age);
-            if (todate.Date > now.AddYears(-age))
-            {
-                age--;
-                Console.WriteLine(age);
-            }
-                if (age >= 21) return true;
+            if (todate.Date > now.AddYears(-age)) age--;
+            
+            if (age >= 21) return true;
             else return false;
         }
 
