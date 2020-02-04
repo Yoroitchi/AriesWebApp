@@ -45,16 +45,6 @@
             </ul>
         </div>
 
-        <a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="CreateOfferFromSchema" asp-route-connectionId="@Model.Connection.Id">CreateOfferFromSchema</a>
-
-        <form class="input-group mb-3" asp-controller="Credentials" asp-action="SendOfferCredential">
-            <input type="hidden" name="connectionId" value="@Model.Connection.Id" />
-            <input type="text" name="credDefId" autocomplete="off" class="form-control" placeholder="Type credential definition id here" aria-label="Recipient's username" aria-describedby="basic-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="submit">Send Credential Offer</button>
-            </div>
-        </form>
-
         <form class="input-group mb-3" asp-controller="Proof" asp-action="SendProofNameRequest">
             <input type="hidden" name="connectionId" value="@Model.Connection.Id" />
             <div class="input-group-append">
