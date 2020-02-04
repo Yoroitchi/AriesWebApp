@@ -12,25 +12,45 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var attr in @Model.ProofPartial.RequestedProof.RevealedAttributes)
+        @if (Model.ProofPartial != null && Model.ProofPartial.RequestedProof != null)
+        {
+            @foreach (var attr in @Model.ProofPartial.RequestedProof.RevealedAttributes)
+            {
+                <tr>
+                    @if (i == 0)
+                    {
+                        <td>@Model.Name</td>
+                        i++;
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td>
+                        @attr.Key
+                    </td>
+                    <td>
+                        @attr.Value.Encoded
+                    </td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
+
                 @if (i == 0)
                 {
                     <td>@Model.Name</td>
+                    i++;
                 }
                 else
                 {
                     <td></td>
                 }
-                <td>
-                    @attr.Key
-                </td>
-                <td>
-                    @attr.Value.Encoded
-                </td>
             </tr>
         }
+
     </tbody>
 </table>
 
