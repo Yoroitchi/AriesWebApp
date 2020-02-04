@@ -13,5 +13,7 @@ namespace AriesWebApp.Models
     public class ProofsDetailViewModel
     {
         public PartialProof ProofPartial { get; set; }
+
+        public string Name { get; set; }
     }
 }

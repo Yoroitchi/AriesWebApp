@@ -28,9 +28,17 @@
                 <td>
                     @item.State
                 </td>
-                <td>
-                    <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProof", "Proof", new {proofRecordId = @item.Id})'">Send Proof</button>
-                </td>
+                @if (item.State == Hyperledger.Aries.Features.PresentProof.ProofState.Accepted)
+                {
+                    <td></td>
+                }
+                else
+                {
+                    <td>
+                        <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProof", "Proof", new {proofRecordId = @item.Id})'">Send Proof</button>
+                    </td>
+                }
+
             </tr>
             }
         </tbody>

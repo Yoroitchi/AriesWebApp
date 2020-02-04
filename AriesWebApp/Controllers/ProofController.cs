@@ -50,11 +50,18 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string proofRecordId)
         {
+            PartialProof proofNonEmpty = new PartialProof();
             var agentContext = await _agentProvider.GetContextAsync();
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
+            var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
+            if (proofRecord.ProofJson != null)
+            {
+               proofNonEmpty = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
+            }
             var model = new ProofsDetailViewModel
             {
-                ProofPartial = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson),
+                ProofPartial = proofNonEmpty,
+                Name = request.Name
             };
             return View(model);
         }
