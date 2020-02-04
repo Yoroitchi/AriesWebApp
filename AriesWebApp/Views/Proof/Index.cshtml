@@ -29,25 +29,16 @@
                     @item.State
                 </td>
 
-                @if (item.ConnectionId == null)
-                {
-                   @*<td>
-                        <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProofRequestNameView", "Proof")'">Send Proof name request</button>
-                    </td>*@
-                    @if (item.State == Hyperledger.Aries.Features.PresentProof.ProofState.Accepted)
-                    {
-                        <td>
-                            <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("VerifyProof", "Proof", new { proofRecordId = item.Id})'">Verify Proof</button>
-                        </td>
-                    }
+                @if (item.State == Hyperledger.Aries.Features.PresentProof.ProofState.Accepted)
+                 {
+                    <td>
+                        <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("VerifyProof", "Proof", new { proofRecordId = item.Id})'">Verify Proof</button>
+                    </td>
                 }
                 else
                 {
-                    <td>
-                        <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("SendProof", "Proof", new {proofRecordId = @item.Id})'">Send Proof</button>
-                    </td>
+                    <td></td>
                 }
-
 
             </tr>
             }
