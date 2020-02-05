@@ -120,7 +120,8 @@ namespace AriesWebApp.Controllers
                 CreatedAt = credentialRecord.CreatedAtUtc.Value.ToLocalTime(),
                 State = credentialRecord.State,
                 CredentialAttributesValues = credentialRecord.CredentialAttributesValues,
-            };
+                CredentialRecordId = id
+    };
             return View(model);
         }
 
