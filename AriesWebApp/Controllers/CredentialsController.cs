@@ -55,9 +55,44 @@ namespace AriesWebApp.Controllers
             var agentContext = await _agentContextProvider.GetContextAsync();
             var credentialRecord = await _credentialService.GetAsync(agentContext, id);
             var connectionRecord = await _connectionService.GetAsync(agentContext, credentialRecord.ConnectionId);
-            (var cred, _) = await _credentialService.CreateCredentialAsync(agentContext: agentContext, credentialId: id);
+            (var cred, var credentialRecordIssued) = await _credentialService.CreateCredentialAsync(agentContext: agentContext, credentialId: id);
             await _messageService.SendAsync(agentContext.Wallet, cred, connectionRecord);
-            
+
+            //Deleting info not to keep => specific to the fictional-passeport-schema
+            //{ "holderdid", "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
+            foreach (var attr in credentialRecordIssued.CredentialAttributesValues)
+            {
+                switch (attr.Name)
+                {
+                    case "issuerCountryCode":
+                        attr.Value = "Deleted";break;
+
+                    case "firstname":
+                        attr.Value = "Deleted"; break;
+
+                    case "familyname":
+                        attr.Value = "Deleted"; break;
+
+                    case "birthdate":
+                        attr.Value = "Deleted"; break;
+
+                    case "citizenship":
+                        attr.Value = "Deleted"; break;
+
+                    case "sex":
+                        attr.Value = "Deleted"; break;
+
+                    case "placeOfBirth":
+                        attr.Value = "Deleted"; break;
+
+                    default:
+                        break;
+                }
+                credentialRecordIssued.RequestJson = "";
+                credentialRecordIssued.OfferJson = "";
+                await _walletRecordService.UpdateAsync(agentContext.Wallet, credentialRecordIssued);
+            }
+
             return RedirectToAction("Index");
         }
 
@@ -90,19 +125,19 @@ namespace AriesWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendOfferCredential(string connectionId, string credDefId)
+        public async Task<IActionResult> SendOfferCredential(string connectionId, string credDefId, string holderDid)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
             var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
 
-            //{ "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
+            //{ "holderdid", "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
             var offerConfig = new OfferConfiguration
             {
                 CredentialDefinitionId = credDefId,
                 IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
                 CredentialAttributeValues = new[]
                 {
-                     new CredentialPreviewAttribute("holderdid",""),
+                     new CredentialPreviewAttribute("holderdid", holderDid),
                      new CredentialPreviewAttribute("type","passport"), 
                      new CredentialPreviewAttribute("passportNumber", $"{Guid.NewGuid().ToString("N")}"),
                      new CredentialPreviewAttribute("issuerCountryCode", "CH"),
