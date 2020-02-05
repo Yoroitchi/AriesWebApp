@@ -55,6 +55,14 @@
             </div>
         </form>
 
+        <form class="input-group mb-3" asp-controller="Ledger" asp-action="PostDIDOnLedger">
+            <input type="hidden" name="connectionId" value="@Model.Connection.Id" />
+            <input type="text" name="holderDID" autocomplete="off" class="form-control" placeholder="Type DID to post here" aria-label="Recipient's username" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary" type="submit">Post DID on ledger</button>
+            </div>
+        </form>
+
     </div>
     <div class="col-md-6">
         <div class="card text-center">

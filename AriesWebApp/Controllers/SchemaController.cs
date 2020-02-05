@@ -8,6 +8,7 @@ using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Models.Records;
 using Hyperledger.Indy.LedgerApi;
+using Hyperledger.Indy.DidApi;
 using AriesWebApp.Models;
 
 namespace AriesWebApp.Controllers
@@ -17,14 +18,12 @@ namespace AriesWebApp.Controllers
         private readonly IWalletService _walletService;
         private readonly ISchemaService _schemaService;
         private readonly IAgentProvider _agentContextProvider;
-        private readonly IProvisioningService _provisioningService;
         private readonly IWalletRecordService _walletRecordService;
         private readonly AgentOptions _agentOptions;
         public SchemaController(
             IWalletService walletService,
             ISchemaService schemaService,
             IAgentProvider agentContextProvider,
-            IProvisioningService provisioningService,
             IWalletRecordService walletRecordService,
             IOptions<AgentOptions> agentOptions
             )
@@ -32,7 +31,6 @@ namespace AriesWebApp.Controllers
             _walletService = walletService;
             _schemaService = schemaService;
             _agentContextProvider = agentContextProvider;
-            _provisioningService = provisioningService;
             _walletRecordService = walletRecordService;
             _agentOptions = agentOptions.Value;
         }
@@ -56,11 +54,15 @@ namespace AriesWebApp.Controllers
             var schemaName = "fictional-passeport-" + $"{ Guid.NewGuid().ToString("N")}";
 
             var schemaVersion = "1.1";
-            var schemaAttrNames = new[] { "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" };
-            //var schemaAttrNames = new [] { "first_name", "last_name" };
+            var schemaAttrNames = new[] { "holderdid", "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" };
+
+
             //promoting the did to TRUSTEE role
+            
+            var verkey = await Did.KeyForLocalDidAsync(agentContext.Wallet, _agentOptions.IssuerDid);
+
             await Ledger.SignAndSubmitRequestAsync(await agentContext.Pool, agentContext.Wallet, _agentOptions.IssuerDid,
-             await Ledger.BuildNymRequestAsync(_agentOptions.IssuerDid, _agentOptions.IssuerDid, "~7TYfekw4GUagBnBVCqPjiC", null, "TRUSTEE"));
+             await Ledger.BuildNymRequestAsync(_agentOptions.IssuerDid, _agentOptions.IssuerDid, verkey, null, "TRUSTEE"));
 
             //Create and register a dummy schema using previous fields
             await _schemaService.CreateSchemaAsync(agentContext, _agentOptions.IssuerDid, schemaName, schemaVersion, schemaAttrNames);

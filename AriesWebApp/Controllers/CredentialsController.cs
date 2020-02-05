@@ -7,7 +7,7 @@ using Hyperledger.Aries.Features.DidExchange;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AriesWebApp.Models;
-using Newtonsoft.Json;
+
 
 
 namespace AriesWebApp.Controllers
@@ -96,12 +96,13 @@ namespace AriesWebApp.Controllers
             var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
 
             //{ "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
-             var offerConfig = new OfferConfiguration
-             {
-                 CredentialDefinitionId = credDefId,
-                 IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
-                 CredentialAttributeValues = new [] 
-                 { 
+            var offerConfig = new OfferConfiguration
+            {
+                CredentialDefinitionId = credDefId,
+                IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
+                CredentialAttributeValues = new[]
+                {
+                     new CredentialPreviewAttribute("holderdid",""),
                      new CredentialPreviewAttribute("type","passport"), 
                      new CredentialPreviewAttribute("passportNumber", $"{Guid.NewGuid().ToString("N")}"),
                      new CredentialPreviewAttribute("issuerCountryCode", "CH"),
@@ -115,12 +116,6 @@ namespace AriesWebApp.Controllers
                      new CredentialPreviewAttribute("expiryDate", "20-01-2030")
                  }
              };
-            /*var offerConfig = new OfferConfiguration
-            {
-                CredentialDefinitionId = credDefId,
-                IssuerDid = "Th7MpTaRZVRYnPiabds81Y",
-                CredentialAttributeValues = new[] { new CredentialPreviewAttribute("first_name", "Test"), new CredentialPreviewAttribute("last_name", "Holder") }
-            };*/
 
             (var credOfferMsg, _) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
             await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
