@@ -18,22 +18,20 @@ namespace AriesWebApp.Controllers
         private readonly IAgentProvider _agentContextProvider;
         private readonly IConnectionService _connectionService;
         private readonly IMessageService _messageService;
-        private readonly IWalletRecordService _walletRecordService;
+
 
 
         public CredentialsController(
             ICredentialService credentialService,
             IAgentProvider agentContextProvider,
             IConnectionService connectionService,
-            IMessageService messageService,
-            IWalletRecordService walletRecordService
+            IMessageService messageService
             )
         {
             _credentialService = credentialService;
             _agentContextProvider = agentContextProvider;
             _connectionService = connectionService;
             _messageService = messageService;
-            _walletRecordService = walletRecordService;
         }
 
         [HttpGet]

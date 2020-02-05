@@ -59,7 +59,6 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var context = await _agentContextProvider.GetContextAsync();
-
             return View(new ConnectionsViewModel
             {
                 Connections = await _connectionService.ListAsync(context)

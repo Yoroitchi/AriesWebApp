@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Hyperledger.Aries.Storage;
+using Hyperledger.Indy.DidApi;
 
 
 namespace AriesWebApp

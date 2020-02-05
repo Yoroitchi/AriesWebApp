@@ -2,35 +2,41 @@
 using System.Threading.Tasks;
 using Hyperledger.Aries.Configuration;
 using Hyperledger.Aries.Storage;
+using Hyperledger.Aries.Agents;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using AriesWebApp.Models;
+
 
 namespace AriesWebApp.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IWalletService _walletService;
+        private readonly IAgentProvider _agentContextProvider;
         private readonly IProvisioningService _provisioningService;
         private readonly AgentOptions _walletOptions;
 
         public HomeController(
-            IWalletService walletService,
+            IAgentProvider agentContextProvider,
             IProvisioningService provisioningService,
             IOptions<AgentOptions> walletOptions)
         {
-            _walletService = walletService;
+            _agentContextProvider = agentContextProvider;
             _provisioningService = provisioningService;
             _walletOptions = walletOptions.Value;
         }
 
         public async Task<IActionResult> Index()
         {
-            var wallet = await _walletService.GetWalletAsync(
-                _walletOptions.WalletConfiguration,
-                _walletOptions.WalletCredentials);
+            var agentContext = await _agentContextProvider.GetContextAsync();
 
-            var provisioning = await _provisioningService.GetProvisioningAsync(wallet);
+            if (_walletOptions.IssuerDid == null)
+            {
+                agentContext = await _agentContextProvider.GetContextAsync();
+                var provrecord = await _provisioningService.GetProvisioningAsync(agentContext.Wallet);
+                _walletOptions.IssuerDid = provrecord.IssuerDid;
+            }
+            var provisioning = await _provisioningService.GetProvisioningAsync(agentContext.Wallet);
             return View(provisioning);
         }
 
