@@ -1,14 +1,15 @@
 ﻿using System;
 using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Storage;
+using Hyperledger.Aries.Configuration;
 using Hyperledger.Aries.Models.Records;
 using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Features.DidExchange;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using AriesWebApp.Models;
-
-
+using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
 namespace AriesWebApp.Controllers
 {
@@ -20,14 +21,17 @@ namespace AriesWebApp.Controllers
         private readonly IConnectionService _connectionService;
         private readonly IMessageService _messageService;
         private readonly IWalletRecordService _walletRecordService;
-
+        private readonly ISchemaService _schemaService;
+        private readonly AgentOptions _agentOptions;
 
         public CredentialsController(
             ICredentialService credentialService,
             IAgentProvider agentContextProvider,
             IConnectionService connectionService,
             IMessageService messageService,
-            IWalletRecordService walletRecordService
+            IWalletRecordService walletRecordService,
+            ISchemaService schemaService,
+            IOptions<AgentOptions> agentOptions
             )
         {
             _credentialService = credentialService;
@@ -35,6 +39,8 @@ namespace AriesWebApp.Controllers
             _connectionService = connectionService;
             _messageService = messageService;
             _walletRecordService = walletRecordService;
+            _schemaService = schemaService;
+            _agentOptions = agentOptions.Value;
         }
 
         [HttpGet]
@@ -65,25 +71,25 @@ namespace AriesWebApp.Controllers
                 switch (attr.Name)
                 {
                     case "issuerCountryCode":
-                        attr.Value = "Deleted";break;
+                        attr.Value = "";break;
 
                     case "firstname":
-                        attr.Value = "Deleted"; break;
+                        attr.Value = ""; break;
 
                     case "familyname":
-                        attr.Value = "Deleted"; break;
+                        attr.Value = ""; break;
 
                     case "birthdate":
-                        attr.Value = "Deleted"; break;
+                        attr.Value = ""; break;
 
                     case "citizenship":
-                        attr.Value = "Deleted"; break;
+                        attr.Value = ""; break;
 
                     case "sex":
-                        attr.Value = "Deleted"; break;
+                        attr.Value = ""; break;
 
                     case "placeOfBirth":
-                        attr.Value = "Deleted"; break;
+                        attr.Value = ""; break;
 
                     default:
                         break;
@@ -125,7 +131,7 @@ namespace AriesWebApp.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> SendOfferCredential(string connectionId, string credDefId, string holderDid)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
@@ -159,6 +165,19 @@ namespace AriesWebApp.Controllers
             return RedirectToAction("Details", "Connections", new { id = connectionId });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SendOfferCredential(string schemaId, string connectionId)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
+            string tag = Guid.NewGuid().ToString("N");
+            var offerConfig = await CreateOfferFromSchemaId(schemaId, connectionId, tag[1..4]);
+            (var credOfferMsg, _) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
+            await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
+
+            return RedirectToAction("Details", "Connections", new { id = connectionId });
+        }
+        
         [HttpGet]
         public async Task<IActionResult> CreateOfferFromSchemaId(string schemaId, string connectionId)
         {
@@ -171,6 +190,28 @@ namespace AriesWebApp.Controllers
             });
         }
 
+        [HttpPost]
+        public async Task<OfferConfiguration> CreateOfferFromSchemaId(string schemaId, string connectionId, string tag)
+        {
+            var agentContext = await _agentContextProvider.GetContextAsync();
+            List<CredentialPreviewAttribute> listCredAttr = new List<CredentialPreviewAttribute>();
+            var credDefId = await _schemaService.CreateCredentialDefinitionAsync(agentContext, schemaId, tag, false, 10);
+
+            foreach (var item in Request.Form.Keys)
+            {
+                if(!item.Equals("__RequestVerificationToken"))
+                {
+                    listCredAttr.Add(new CredentialPreviewAttribute (item, Request.Form[item]));
+                }
+            }
+            OfferConfiguration offer = new OfferConfiguration
+            {
+                CredentialDefinitionId = credDefId,
+                IssuerDid = _agentOptions.IssuerDid,
+                CredentialAttributeValues = listCredAttr,
+            };
+            return offer;
+        }
     }
 }
 /* {

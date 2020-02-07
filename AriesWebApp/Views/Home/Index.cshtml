@@ -13,8 +13,8 @@
         <small class="text-muted">@Model.Endpoint.Uri</small>
     </div>
     <ul class="list-group list-group-flush">
-        <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="DID">@Model.Endpoint.Did</li>
-        <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="VERKEY">@Model.Endpoint.Verkey</li>
-        <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="ISSUER DID">@Model.IssuerDid</li>
+        <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="DID"><b>Agent DID:</b> @Model.Endpoint.Did</li>
+        <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="VERKEY"><b>Agent public key:</b> @Model.Endpoint.Verkey</li>
+        <li class="list-group-item" data-toggle="tooltip" data-placement="top" title="ISSUER DID"><b>Identity DID:</b> @Model.IssuerDid</li>
     </ul>
 </div>

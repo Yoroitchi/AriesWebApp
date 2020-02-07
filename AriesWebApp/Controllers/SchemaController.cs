@@ -51,7 +51,7 @@ namespace AriesWebApp.Controllers
             var agentContext = await _agentContextProvider.GetContextAsync();
 
             //The fields of the future schema 
-            var schemaName = "fictional-passeport-" + $"{ Guid.NewGuid().ToString("N")}";
+            var schemaName = "fictional-passport-" + $"{ Guid.NewGuid().ToString("N")}";
 
             var schemaVersion = "1.1";
             var schemaAttrNames = new[] { "holderdid", "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" };
@@ -103,5 +103,6 @@ namespace AriesWebApp.Controllers
                 ConnectionId = connectionId
             });
         }
+
     }
 }
