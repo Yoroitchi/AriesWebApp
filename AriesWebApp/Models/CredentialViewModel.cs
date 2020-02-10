@@ -1,4 +1,5 @@
 ﻿using Hyperledger.Aries.Features.IssueCredential;
+using Hyperledger.Aries.Models.Records;
 using System.Collections.Generic;
 using System;
 
@@ -15,5 +16,7 @@ namespace AriesWebApp.Models
         public IEnumerable<CredentialPreviewAttribute> CredentialAttributesValues { get; set; }
         
         public string CredentialRecordId { get; set; }
+        
+        public string CredDef { get; set; }
     }
 }

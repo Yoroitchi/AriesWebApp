@@ -1,7 +1,5 @@
 ﻿using System;
 using Hyperledger.Aries.Agents;
-using Hyperledger.Aries.Storage;
-using Hyperledger.Aries.Models.Records;
 using Hyperledger.Aries.Features.IssueCredential;
 using Hyperledger.Aries.Features.DidExchange;
 using Microsoft.AspNetCore.Mvc;
@@ -73,7 +71,8 @@ namespace AriesWebApp.Controllers
                 CreatedAt = credentialRecord.CreatedAtUtc.Value.ToLocalTime(),
                 State = credentialRecord.State,
                 CredentialAttributesValues = credentialRecord.CredentialAttributesValues,
-                CredentialRecordId = id
+                CredentialRecordId = id,
+                CredDef = credentialRecord.CredentialDefinitionId
             };
             return View(model);
         }
