@@ -82,6 +82,7 @@ namespace AriesWebApp.Controllers
                 Schema = await _walletRecordService.GetAsync<SchemaRecord>(walletContext, id),
                 AssociateCredDefinition = await _schemaService.ListCredentialDefinitionsAsync(walletContext)
             };
+
             return View(model);
         }
 
@@ -89,17 +90,18 @@ namespace AriesWebApp.Controllers
         public async Task<IActionResult> SendCredDefToLedger(string id)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
-            await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag", false, 0);
+            await _schemaService.CreateCredentialDefinitionAsync(agentContext, id, "Tag", false, 1000);
             return RedirectToAction("Details", "Schema", new { id });
         }
 
         [HttpGet]
-        public async Task<IActionResult> CreateOfferFromSchema(string connectionId)
+        public async Task<IActionResult> CreateOffer(string connectionId)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
             return View(new CreateOfferViewModel
             {
                 Schemas = await _schemaService.ListSchemasAsync(agentContext.Wallet),
+                CredDefs = await _schemaService.ListCredentialDefinitionsAsync(agentContext.Wallet),
                 ConnectionId = connectionId
             });
         }

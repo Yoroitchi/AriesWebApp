@@ -64,6 +64,12 @@ namespace AriesWebApp.Controllers
             (var cred, var credentialRecordIssued) = await _credentialService.CreateCredentialAsync(agentContext: agentContext, credentialId: id);
             await _messageService.SendAsync(agentContext.Wallet, cred, connectionRecord);
 
+            //Updating credential count in credential Definition Record
+            var definitionRecord = await _schemaService.GetCredentialDefinitionAsync(agentContext.Wallet, credentialRecordIssued.CredentialDefinitionId);
+            definitionRecord.MaxCredentialCount++;
+            await _walletRecordService.UpdateAsync(agentContext.Wallet, definitionRecord);
+
+
             //Deleting info not to keep => specific to the fictional-passeport-schema
             //{ "holderdid", "type", "passportNumber", "issuerCountryCode", "firstname", "familyname", "birthdate", "citizenship", "sex", "placeOfBirth", "issuingDate", "expiryDate" }
             foreach (var attr in credentialRecordIssued.CredentialAttributesValues)
@@ -124,42 +130,42 @@ namespace AriesWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendOfferCredential(string schemaId, string connectionId)
+        public async Task<IActionResult> SendOfferCredential(string connectionId, string credDefId)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
             var connectionRecord = await _connectionService.GetAsync(agentContext, connectionId);
             string tag = Guid.NewGuid().ToString("N");
-            var offerConfig = await CreateOfferFromSchemaId(schemaId, connectionId, tag[0..4]);
+            var offerConfig = MakeOfferConfiguration(credDefId);
             (var credOfferMsg, _) = await _credentialService.CreateOfferAsync(agentContext, offerConfig, connectionId);
             await _messageService.SendAsync(agentContext.Wallet, credOfferMsg, connectionRecord);
-
             return RedirectToAction("Details", "Connections", new { id = connectionId });
         }
-        
+
         [HttpGet]
-        public async Task<IActionResult> CreateOfferFromSchemaId(string schemaId, string connectionId)
+        public async Task<IActionResult> CreateOfferFromCredDef (string credDefinitionId, string connectionId)
         {
             var agentContext = await _agentContextProvider.GetContextAsync();
-            var schemaRecord = await _walletRecordService.GetAsync<SchemaRecord>(agentContext.Wallet, schemaId);
-            return View(new OfferViewModel
+            var credDefinitionRecord = await _schemaService.GetCredentialDefinitionAsync(agentContext.Wallet, credDefinitionId);
+            var schemaRecord = await _walletRecordService.GetAsync<SchemaRecord>(agentContext.Wallet, credDefinitionRecord.SchemaId);
+            var connection = await _connectionService.GetAsync(agentContext, connectionId);
+            return View(new OfferCredViewModel
             {
                 Schema = schemaRecord,
-                ConnectionId = connectionId
+                CredDef = credDefinitionRecord,
+                Connection = connection
             });
         }
 
         [HttpPost]
-        public async Task<OfferConfiguration> CreateOfferFromSchemaId(string schemaId, string connectionId, string tag)
+        public OfferConfiguration MakeOfferConfiguration(string credDefId)
         {
-            var agentContext = await _agentContextProvider.GetContextAsync();
             List<CredentialPreviewAttribute> listCredAttr = new List<CredentialPreviewAttribute>();
-            var credDefId = await _schemaService.CreateCredentialDefinitionAsync(agentContext, schemaId, tag, false, 10);
 
             foreach (var item in Request.Form.Keys)
             {
-                if(!item.Equals("__RequestVerificationToken"))
+                if (!item.Equals("__RequestVerificationToken"))
                 {
-                    listCredAttr.Add(new CredentialPreviewAttribute (item, Request.Form[item]));
+                    listCredAttr.Add(new CredentialPreviewAttribute(item, Request.Form[item]));
                 }
             }
             OfferConfiguration offer = new OfferConfiguration

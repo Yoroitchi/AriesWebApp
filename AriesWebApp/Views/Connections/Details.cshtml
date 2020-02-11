@@ -93,7 +93,7 @@
     </div>
 </div>
 <div class="row mt-3">
-    <a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="CreateOfferFromSchema" asp-route-connectionId="@Model.Connection.Id">CreateOfferFromSchema</a>
+    <a class="btn btn-primary mt-3" role="button" asp-controller="Schema" asp-action="CreateOffer" asp-route-connectionId="@Model.Connection.Id">Create a credential offer</a>
 
     <form class="input-group mb-3" asp-controller="Ledger" asp-action="PostDIDOnLedger">
         <input type="hidden" name="connectionId" value="@Model.Connection.Id" />

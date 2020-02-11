@@ -1,0 +1,25 @@
+﻿@model CreateOfferViewModel
+
+<table class="table-borderless" cellpadding="10">
+    <thead>
+        <tr>
+            <th scope="col">Credential definition ID (Id on ledger)</th>
+            <th scope="col">Schema ID</th>
+        </tr>
+    </thead>
+    @foreach (var credDef in Model.CredDefs)
+    {
+        <tr>
+            <td>
+                @credDef.Id
+            </td>
+            <td>
+                @credDef.SchemaId
+            </td>
+            <td>
+                <button class="btn btn-primary mt-3" onclick="location.href='@Url.Action("CreateOfferFromCredDef","Credentials",new { credDefinitionId = @credDef.Id, connectionId=@Model.ConnectionId})'">create the offer</button>
+            </td>
+            
+        </tr>
+    }
+</table>

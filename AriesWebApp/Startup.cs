@@ -37,7 +37,7 @@ namespace AriesWebApp
                     option.IssuerDid = "Th7MpTaRZVRYnPiabds81Y";
                     option.IssuerKeySeed = "000000000000000000000000Steward1";
                     option.GenesisFilename = "AriesTest.txn";
-                    option.PoolName = "AriesTest";
+                    option.PoolName = "Aries";
                     option.EndpointUri = "http://localhost:7000";
                     option.ProtocolVersion = 2;
                 });
