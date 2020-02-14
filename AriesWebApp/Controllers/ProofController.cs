@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Hyperledger.Aries.Features.PresentProof;
 using Hyperledger.Aries.Agents;
 using Hyperledger.Aries.Storage;
 using Hyperledger.Aries.Features.DidExchange;
-using Hyperledger.Indy.AnonCredsApi;
 using AriesWebApp.Models;
-using System.Threading;
+
 
 namespace AriesWebApp.Controllers
 {
@@ -50,18 +49,23 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string proofRecordId)
         {
-            PartialProof proofNonEmpty = new PartialProof();
             var agentContext = await _agentProvider.GetContextAsync();
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
-            var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
+
+            PartialProof partialProof = new PartialProof();
+            JObject proofObject = new JObject();
+
             if (proofRecord.ProofJson != null)
             {
-               proofNonEmpty = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
+                partialProof = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
+                proofObject = JObject.Parse(proofRecord.ProofJson);
             }
             var model = new ProofsDetailViewModel
             {
-                ProofPartial = proofNonEmpty,
-                Name = request.Name
+                ProofRecord = proofRecord,
+                ProofRequest = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson),
+                PartialProof = partialProof,
+                ProofObject = proofObject
             };
             return View(model);
         }
@@ -87,6 +91,7 @@ namespace AriesWebApp.Controllers
             var requestedCredentials = new RequestedCredentials();
             foreach (var requestedAttribute in request.RequestedAttributes)
             {
+
                 var credentials = await _proofService.ListCredentialsForProofRequestAsync(agentContext, request, requestedAttribute.Key);
 
                 requestedCredentials.RequestedAttributes.Add(requestedAttribute.Key, 
@@ -97,13 +102,13 @@ namespace AriesWebApp.Controllers
                     });
             }
 
-            foreach (var requestedAttribute in request.RequestedPredicates)
+            foreach (var requestedPredicates in request.RequestedPredicates)
             {
                 var credentials =
                     await _proofService.ListCredentialsForProofRequestAsync(agentContext, request,
-                        requestedAttribute.Key);
+                        requestedPredicates.Key);
 
-                requestedCredentials.RequestedPredicates.Add(requestedAttribute.Key,
+                requestedCredentials.RequestedPredicates.Add(requestedPredicates.Key,
                     new RequestedAttribute
                     {
                         CredentialId = credentials.First().CredentialInfo.Referent,

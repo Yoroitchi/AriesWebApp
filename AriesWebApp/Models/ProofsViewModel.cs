@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hyperledger.Aries.Features.PresentProof;
+using Newtonsoft.Json.Linq;
 
 
 namespace AriesWebApp.Models
@@ -12,8 +13,9 @@ namespace AriesWebApp.Models
 
     public class ProofsDetailViewModel
     {
-        public PartialProof ProofPartial { get; set; }
-
-        public string Name { get; set; }
+        public ProofRecord ProofRecord { get; set; }
+        public ProofRequest ProofRequest { get; set; }
+        public PartialProof PartialProof { get; set; }
+        public JObject ProofObject { get; set; }
     }
 }

@@ -2,24 +2,21 @@
 @{
     int i = 0;
 }
-
-<table class="table-borderless" cellpadding="10">
-    <thead>
-        <tr>
-            <th scope="col">Proof name</th>
-            <th scope="col">Attributes Key</th>
-            <th scope="col">Attributes Value</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.ProofPartial != null && Model.ProofPartial.RequestedProof != null)
-        {
-            @foreach (var attr in @Model.ProofPartial.RequestedProof.RevealedAttributes)
+<div>
+    <table class="table-borderless" cellpadding="10">
+        <thead>
+            <tr>
+                <th scope="col">Proof name</th>
+                <th scope="col">Requested Attributes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ProofRequest.RequestedAttributes)
             {
                 <tr>
                     @if (i == 0)
                     {
-                        <td>@Model.Name</td>
+                        <td>@Model.ProofRequest.Name</td>
                         i++;
                     }
                     else
@@ -27,30 +24,60 @@
                         <td></td>
                     }
                     <td>
-                        @attr.Key
-                    </td>
-                    <td>
-                        @attr.Value.Encoded
+                        @item.Value.Name
                     </td>
                 </tr>
             }
-        }
-        else
-        {
+        </tbody>
+    </table>
+</div>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<h3>Proof Send</h3>
+<div>
+    <table class="table-borderless" cellpadding="10">
+        <thead>
             <tr>
-
-                @if (i == 0)
-                {
-                    <td>@Model.Name</td>
-                    i++;
-                }
-                else
-                {
-                    <td></td>
-                }
+                <th scope="col">Attr key</th>
+                <th scope="col">Attr value encoded</th>
             </tr>
-        }
+        </thead>
+        <tbody>
+            @if (Model.PartialProof != null && Model.PartialProof.RequestedProof != null)
+            {
+                @foreach (var attr in @Model.PartialProof.RequestedProof.RevealedAttributes)
+                {
+                    <tr>
+                        <td>
+                            @attr.Key
+                        </td>
+                        <td>
+                            @attr.Value.Encoded
+                        </td>
 
-    </tbody>
-</table>
+                    </tr>
+                }
+            }
+            <tr>
+                @if (Model.ProofObject != null)
+                {
+                    @foreach (var item in Model.ProofObject)
+                    {
+                        <td>
+                            @item.Key
+                        </td>
+                        <td>
+                            @item.Value
+                        </td>
+                    }
+                }
+
+
+            </tr>
+        </tbody>
+    </table>
+</div>
 
