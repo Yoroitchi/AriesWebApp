@@ -1,0 +1,26 @@
+FROM streetcred/dotnet-indy:1.14.2 AS base
+WORKDIR /app
+
+FROM streetcred/dotnet-indy:1.14.2 AS build
+WORKDIR	/src
+COPY [".", "."]
+
+WORKDIR /src/AriesWebApp
+
+RUN dotnet restore "AriesWebApp.csproj" \
+	-s "https://api.nuget.org/v3/index.json"
+
+#COPY ["AriesWebApp/", "."]
+#COPY ["AriesTest.txn", "./AriesTest.txn"]
+RUN dotnet build "AriesWebApp.csproj" -c Release -o /app
+
+FROM build AS publish
+RUN dotnet publish "AriesWebApp.csproj" -c Release -o /app
+RUN cp /src/AriesWebApp/AriesTest.txn /app
+
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+
+ENTRYPOINT ["dotnet", "AriesWebApp.dll"]
