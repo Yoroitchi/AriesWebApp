@@ -35,7 +35,7 @@ namespace AriesWebApp
                     option.WalletConfiguration = new WalletConfiguration { Id = "Verifier" };
                     option.WalletCredentials = new WalletCredentials { Key = "VerifierKey" };
                     option.GenesisFilename = "AriesTest.txn";
-                    option.PoolName = "AriesTest";
+                    option.PoolName = "Aries";
                     option.EndpointUri = "http://localhost:8000";
                     option.ProtocolVersion = 2;
                 });

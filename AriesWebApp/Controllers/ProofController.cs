@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Hyperledger.Aries.Features.PresentProof;
 using Hyperledger.Aries.Agents;
@@ -50,18 +51,23 @@ namespace AriesWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(string proofRecordId)
         {
-            PartialProof proofNonEmpty = new PartialProof();
             var agentContext = await _agentProvider.GetContextAsync();
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
-            var request = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson);
+
+            PartialProof partialProof = new PartialProof();
+            JObject proofObject = new JObject();
+           
             if (proofRecord.ProofJson != null)
             {
-                proofNonEmpty = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
+                partialProof = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
+                proofObject = JObject.Parse(proofRecord.ProofJson);
             }
             var model = new ProofsDetailViewModel
             {
-                ProofPartial = proofNonEmpty,
-                Name = request.Name
+                ProofRecord = proofRecord,
+                ProofRequest = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson),
+                PartialProof = partialProof,
+                ProofObject = proofObject
             };
             return View(model);
         }
@@ -111,7 +117,6 @@ namespace AriesWebApp.Controllers
         public async Task<RequestPresentationMessage> CreateOver21ProofMessage(ConnectionRecord connectionRecord)
         {
             var agentContext = await _agentProvider.GetContextAsync();
-            var name = connectionRecord.Alias?.Name ?? connectionRecord.Id;
             var proofRequest = new ProofRequest
             {
                 Name = "Over21Request",
@@ -121,6 +126,7 @@ namespace AriesWebApp.Controllers
                 {
                     { "birthdate", new ProofAttributeInfo { Name = "birthdate" } }
                 },
+
             };
 
             (var msg, var proofRecord) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
@@ -129,6 +135,30 @@ namespace AriesWebApp.Controllers
 
             return msg;
         }
+       /* public async Task<RequestPresentationMessage> CreateOver21ProofMessage(ConnectionRecord connectionRecord)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var proofRequest = new ProofRequest
+            {
+                Name = "Over21Request",
+                Version = "1.0",
+                Nonce = await AnonCreds.GenerateNonceAsync(),
+                RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
+                {
+                    { "ayaya", new ProofAttributeInfo { Name = "birthdate" } }
+                },
+                RequestedPredicates = new Dictionary<string, ProofPredicateInfo>
+                {
+                    {"birthdate", new ProofPredicateInfo {PredicateType =">=", PredicateValue=DateTime.Today.AddYears(-21).ToString("yyyy-MM-dd") } }
+                }
+            };
+
+            (var msg, var proofRecord) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+            proofRecord.ConnectionId = connectionRecord.Id;
+            await _walletRecordService.UpdateAsync(agentContext.Wallet, proofRecord);
+
+            return msg;
+        }*/
 
         public async Task<IActionResult> SendOver21ProofRequest(string connectionId)
         {
@@ -173,16 +203,14 @@ namespace AriesWebApp.Controllers
             var birth = "";
             foreach(var item in proof.RequestedProof.RevealedAttributes)
             {
-                Console.WriteLine(item.Value.Raw);
                 if (item.Key.Equals("birthdate"))
                 {
                     birth = item.Value.Raw;
                 }
             }
-            var todate = DateTime.ParseExact(birth, "yyyy-MM-ddT:HH:mm:ssZ", null);
+            var todate = DateTime.ParseExact(birth, "yyyy-MM-dd", null);
             var age = now.Year - todate.Year;
 
-            Console.WriteLine(age);
             if (todate.Date > now.AddYears(-age)) age--;
             
             if (age >= 21) return true;
