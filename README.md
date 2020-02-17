@@ -70,7 +70,7 @@ $sudo apt-get install -y {library}
    * {port} must match with the branch, i.e. for Verifier8000, {port}=8000
    * {actor} is the container's tag
    * Add the option `--rm` if you want to delete the container after stoping the server
-  9. Open a browser with 3 tabs, in each tab go to `http://127.0.0.1:{port}
+  9. Open a browser with 3 tabs, in each tab go to `http://127.0.0.1:{port}`
    * Or click on the link `Now listening on: http://127.0.0.1:` 
   10. Play with agents
 
