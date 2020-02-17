@@ -2,7 +2,7 @@
 This repository contain the code simulating three *Self-Sovereign Identity* Agents. Every agent has been developped using Aries .NET framework (https://github.com/hyperledger/aries-framework-dotnet).
 This project was made as a proof of concept, each agent has a specific role following standards of SSI as described by the Verifiable Claims Working Group of the W3C (https://w3c.github.io/vc-data-model) 
 
-## Setup the demo
+## Setup a demo
 The following instructions work for Ubuntu-18.04 distribution
 
 Clone this repo
