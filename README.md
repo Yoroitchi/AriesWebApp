@@ -2,7 +2,7 @@
 This repository contain the code simulating three *Self-Sovereign Identity* Agents. Every agent has been developped using Aries .NET framework (https://github.com/hyperledger/aries-framework-dotnet).
 This project was made as a proof of concept, each agent has a specific role following standards of SSI as described by the Verifiable Claims Working Group of the W3C (https://w3c.github.io/vc-data-model) 
 
-## What you will need
+## Setup a demo
 The following instructions work for Ubuntu-18.04 distribution
 
 Clone this repo
@@ -14,6 +14,7 @@ Move into the cloned file, you should have the following arborescence
 ./AriesWebApp
 |____________AriesWebApp
 |____________AriesWebApp.sln
+|____________README.md
 ```
 1. Be sure to have `docker` and `docker-compose` installed
 2. Clone indy-sdk (https://github.com/hyperledger/indy-sdk) on your machine 
@@ -56,7 +57,7 @@ $sudo apt-get install -y {library}
  7. From now you will build a docker container for each agent. One branch is dedicated to each one
   ```
     #Checkout to branch 
-    $git checkout uri5000
+    $git checkout Holder5000
     #Build the docker container
     $docker build -t holder -f ./AriesWebApp/docker/dockerfile .
   ```
