@@ -56,7 +56,7 @@ $sudo apt-get install -y {library}
  7. From now you will build a docker container for each agent. One branch is dedicated to each one
   ```
     #Checkout to branch 
-    $git checkout uri5000
+    $git checkout Holder5000
     #Build the docker container
     $docker build -t holder -f ./AriesWebApp/docker/dockerfile .
   ```
