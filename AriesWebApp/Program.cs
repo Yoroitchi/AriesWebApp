@@ -11,13 +11,9 @@ namespace AriesWebApp
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => 
-		{
-			webBuilder.UseStartup<Startup>();
-			/*
-                        Uncomment the line below if you want the application to run in a docker container.
-                        In this case, when running the container, make sure the url is like following : http://[::1]:7000
-                     	*/
-                    	webBuilder.UseUrls("http://127.0.0.1:8000");
-		});
+        		{
+		           	webBuilder.UseStartup<Startup>();
+                   	webBuilder.UseUrls("http://127.0.0.1:8000");
+		        });
     }
 }
