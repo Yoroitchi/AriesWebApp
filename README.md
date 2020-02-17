@@ -14,6 +14,7 @@ Move into the cloned file, you should have the following arborescence
 ./AriesWebApp
 |____________AriesWebApp
 |____________AriesWebApp.sln
+|____________README.md
 ```
 1. Be sure to have `docker` and `docker-compose` installed
 2. Clone indy-sdk (https://github.com/hyperledger/indy-sdk) on your machine 
