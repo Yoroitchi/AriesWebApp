@@ -65,10 +65,12 @@ $sudo apt-get install -y {library}
    * Replace `holder` with `issuer` and `verifier` according to your current branch
   8. Run every container on the host docker network
   ```
-  docker run -itd -p {port}:{port} --network=host {actor}
+  docker run -it -p {port}:{port} --network=host {actor}
   ```
    * {port} must match with the branch, i.e. for Verifier8000, {port}=8000
    * {actor} is the container's tag
-  9. Open a browser with 3 tabs, in each tab go to `http://[::1]:{port}`
+   * Add the option `--rm` if you want to delete the container after stoping the server
+  9. Open a browser with 3 tabs, in each tab go to `http://127.0.0.1:{port}
+   * Or click on the link `Now listening on: http://127.0.0.1:` 
   10. Play with agents
 
