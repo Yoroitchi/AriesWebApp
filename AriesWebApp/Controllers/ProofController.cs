@@ -11,7 +11,7 @@ using Hyperledger.Aries.Storage;
 using Hyperledger.Aries.Features.DidExchange;
 using Hyperledger.Indy.AnonCredsApi;
 using AriesWebApp.Models;
-using System.Threading;
+
 
 namespace AriesWebApp.Controllers
 {
@@ -55,19 +55,16 @@ namespace AriesWebApp.Controllers
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
 
             PartialProof partialProof = new PartialProof();
-            JObject proofObject = new JObject();
            
             if (proofRecord.ProofJson != null)
             {
                 partialProof = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
-                proofObject = JObject.Parse(proofRecord.ProofJson);
             }
             var model = new ProofsDetailViewModel
             {
                 ProofRecord = proofRecord,
                 ProofRequest = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson),
                 PartialProof = partialProof,
-                ProofObject = proofObject
             };
             return View(model);
         }
@@ -97,10 +94,9 @@ namespace AriesWebApp.Controllers
         public async Task<RequestPresentationMessage> CreateProofNameMessage(ConnectionRecord connectionRecord)
         {
             var agentContext = await _agentProvider.GetContextAsync();
-            var name = connectionRecord.Alias?.Name ?? connectionRecord.Id;
             var proofRequest = new ProofRequest
             {
-                Name = "ProofReq",
+                Name = "ProoveYourNameIsJohn",
                 Version = "1.0",
                 Nonce = await AnonCreds.GenerateNonceAsync(),
                 RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
@@ -109,7 +105,9 @@ namespace AriesWebApp.Controllers
                     }
             };
 
-            (var msg, _) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+            (var msg, var proofRecord) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+            proofRecord.ConnectionId = connectionRecord.Id;
+            await _walletRecordService.UpdateAsync(agentContext.Wallet, proofRecord);
 
             return msg;
         }
@@ -184,6 +182,8 @@ namespace AriesWebApp.Controllers
                     verified = VerifyOver21(proof); break;
                 case "Over18request":
                     verified = VerifyOver18(proof); break;
+                case "ProoveYourNameIsJohn":
+                    verified = VerifyNamedJohn(proof); break;
                 default:
                         break;
             }
@@ -194,6 +194,17 @@ namespace AriesWebApp.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        public bool VerifyNamedJohn(PartialProof proof)
+        {
+            var name = proof.RequestedProof.RevealedAttributes.First();
+            if (name.Value.Raw.Equals("John"))
+            { 
+                return true; 
+            }
+
+            return false;
         }
 
         public bool VerifyOver21(PartialProof proof)

@@ -38,11 +38,12 @@
 <p></p>
 <h3>Proof Received</h3>
 <div>
-    <table class="table-borderless" cellpadding="10">
+    <table class="table-bordered" cellpadding="10">
         <thead>
             <tr>
-                <th scope="col">Attr key</th>
-                <th scope="col">Attr value encoded</th>
+                <th scope="col">Requested attribute name</th>
+                <th scope="col">Attribut value encoded</th>
+                <th scope="col">Attribut value raw</th>
             </tr>
         </thead>
         <tbody>
@@ -57,20 +58,26 @@
                         <td>
                             @attr.Value.Encoded
                         </td>
-
+                        <td>
+                            @attr.Value.Raw
+                        </td>
                     </tr>
                 }
             }
             <tr>
-                @if(Model.ProofObject != null)
+                <th scope="col">Credential Definition Id</th>
+                <th scope="col">Schema Id</th>
+            </tr>
+            <tr>
+                @if (Model.PartialProof.Identifiers != null)
                 {
-                    @foreach(var item in Model.ProofObject)
+                    @foreach (var item in Model.PartialProof.Identifiers)
                     {
                         <td>
-                            @item.Key
+                            @item.CredentialDefintionId
                         </td>
                         <td>
-                            @item.Value
+                            @item.SchemaId
                         </td>
                     }
                 }

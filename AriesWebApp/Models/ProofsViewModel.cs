@@ -15,6 +15,5 @@ namespace AriesWebApp.Models
         public ProofRecord ProofRecord { get; set; }
         public ProofRequest ProofRequest { get; set; }
         public PartialProof PartialProof { get; set; }
-        public JObject ProofObject { get; set; }
     }
 }
