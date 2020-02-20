@@ -69,17 +69,6 @@ namespace AriesWebApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SendProofRequestNameView()
-        {
-            var agentContext = await _agentProvider.GetContextAsync();
-            var model = new ConnectionsViewModel
-            {
-                Connections = await _connectionService.ListAsync(agentContext)
-            };
-            return View(model);
-        }
-
-        [HttpGet]
         public async Task<IActionResult> SendProof(string proofRecordId)
         {
             var agentContext = await _agentProvider.GetContextAsync();
@@ -116,7 +105,6 @@ namespace AriesWebApp.Controllers
 
             var (proofMsg, record) = await _proofService.CreatePresentationAsync(agentContext, proofRecordId, requestedCredentials);
             await _messageService.SendAsync(agentContext.Wallet, proofMsg, connectionRecord);
-
             return RedirectToAction("Index");
         }
 
