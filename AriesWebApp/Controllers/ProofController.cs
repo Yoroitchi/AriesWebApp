@@ -53,19 +53,17 @@ namespace AriesWebApp.Controllers
             var proofRecord = await _proofService.GetAsync(agentContext, proofRecordId);
 
             PartialProof partialProof = new PartialProof();
-            JObject proofObject = new JObject();
+            
 
             if (proofRecord.ProofJson != null)
             {
                 partialProof = JsonConvert.DeserializeObject<PartialProof>(proofRecord.ProofJson);
-                proofObject = JObject.Parse(proofRecord.ProofJson);
             }
             var model = new ProofsDetailViewModel
             {
                 ProofRecord = proofRecord,
                 ProofRequest = JsonConvert.DeserializeObject<ProofRequest>(proofRecord.RequestJson),
                 PartialProof = partialProof,
-                ProofObject = proofObject
             };
             return View(model);
         }
