@@ -23,4 +23,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 
+ENV ASPNETCORE_ENVIRONMENT=Development
 ENTRYPOINT ["dotnet", "AriesWebApp.dll"]
