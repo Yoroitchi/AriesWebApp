@@ -48,14 +48,14 @@
         <form class="input-group mb-3" asp-controller="Proof" asp-action="SendProofNameRequest">
             <input type="hidden" name="connectionId" value="@Model.Connection.Id" />
             <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="submit">Request a proof of name</button>
+                <button class="btn btn-outline-primary" type="submit">Request a proof of name is John</button>
             </div>
         </form>
 
-        <form class="input-group mb-3" asp-controller="Proof" asp-action="SendOver21ProofRequest">
+        <form class="input-group mb-3" asp-controller="Proof" asp-action="SendProofNameIsDaveRequest">
             <input type="hidden" name="connectionId" value="@Model.Connection.Id" />
             <div class="input-group-append">
-                <button class="btn btn-outline-primary" type="submit">Request a proof of Over 21</button>
+                <button class="btn btn-outline-primary" type="submit">Request a proof of name is Dave</button>
             </div>
         </form>
     </div>

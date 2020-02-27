@@ -91,6 +91,17 @@ namespace AriesWebApp.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SendProofNameIsDaveRequest(string connectionId)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var connectionRecord = await _walletRecordService.GetAsync<ConnectionRecord>(agentContext.Wallet, connectionId);
+            var proofNameRequest = await CreateProofNameIsDaveMessage(connectionRecord);
+            await _messageService.SendAsync(agentContext.Wallet, proofNameRequest, connectionRecord);
+
+            return RedirectToAction("Index");
+        }
+
         public async Task<RequestPresentationMessage> CreateProofNameMessage(ConnectionRecord connectionRecord)
         {
             var agentContext = await _agentProvider.GetContextAsync();
@@ -101,7 +112,7 @@ namespace AriesWebApp.Controllers
                 Nonce = await AnonCreds.GenerateNonceAsync(),
                 RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
                     {
-                        {"firstname-required", new ProofAttributeInfo {Name = "firstname"}}
+                        {"YourNameMustBeJohn", new ProofAttributeInfo {Name = "firstname"}}
                     }
             };
 
@@ -111,6 +122,28 @@ namespace AriesWebApp.Controllers
 
             return msg;
         }
+
+        public async Task<RequestPresentationMessage> CreateProofNameIsDaveMessage(ConnectionRecord connectionRecord)
+        {
+            var agentContext = await _agentProvider.GetContextAsync();
+            var proofRequest = new ProofRequest
+            {
+                Name = "ProoveYourNameIsDave",
+                Version = "1.0",
+                Nonce = await AnonCreds.GenerateNonceAsync(),
+                RequestedAttributes = new Dictionary<string, ProofAttributeInfo>
+                    {
+                        {"YourNameMustBeDave", new ProofAttributeInfo {Name = "firstname"}}
+                    }
+            };
+
+            (var msg, var proofRecord) = await _proofService.CreateRequestAsync(agentContext, proofRequest);
+            proofRecord.ConnectionId = connectionRecord.Id;
+            await _walletRecordService.UpdateAsync(agentContext.Wallet, proofRecord);
+
+            return msg;
+        }
+
 
         public async Task<RequestPresentationMessage> CreateOver21ProofMessage(ConnectionRecord connectionRecord)
         {
@@ -184,6 +217,8 @@ namespace AriesWebApp.Controllers
                     verified = VerifyOver18(proof); break;
                 case "ProoveYourNameIsJohn":
                     verified = VerifyNamedJohn(proof); break;
+                case "ProoveYourNameIsDave":
+                    verified = VerifyNamedDave(proof); break;
                 default:
                         break;
             }
@@ -202,6 +237,17 @@ namespace AriesWebApp.Controllers
             if (name.Value.Raw.Equals("John"))
             { 
                 return true; 
+            }
+
+            return false;
+        }
+
+        public bool VerifyNamedDave(PartialProof proof)
+        {
+            var name = proof.RequestedProof.RevealedAttributes.First();
+            if (name.Value.Raw.Equals("Dave"))
+            {
+                return true;
             }
 
             return false;
