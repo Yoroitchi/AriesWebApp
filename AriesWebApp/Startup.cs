@@ -31,7 +31,7 @@ namespace AriesWebApp
                 builder.RegisterAgent(option =>
                 {
 
-                    option.AgentName = "Issuer";
+                    option.AgentName = "Government";
                     option.WalletConfiguration = new WalletConfiguration { Id = "Issuer" };
                     option.WalletCredentials = new WalletCredentials { Key = "IssuerKey" };
                     option.IssuerDid = "Th7MpTaRZVRYnPiabds81Y";
