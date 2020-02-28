@@ -31,7 +31,7 @@ namespace AriesWebApp
                 builder.RegisterAgent(option =>
                 {
 
-                    option.AgentName = "Verifier";
+                    option.AgentName = "NGO";
                     option.WalletConfiguration = new WalletConfiguration { Id = "Verifier" };
                     option.WalletCredentials = new WalletCredentials { Key = "VerifierKey" };
                     option.GenesisFilename = "AriesTest.txn";
