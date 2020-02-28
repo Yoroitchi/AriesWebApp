@@ -32,7 +32,7 @@ namespace AriesWebApp
                 builder.RegisterAgent(option =>
                 {
 
-                    option.AgentName = "Holder";
+                    option.AgentName = "Refugee";
                     option.WalletConfiguration = new WalletConfiguration { Id = "Holder" };
                     option.WalletCredentials = new WalletCredentials { Key = "HolderKey" };
                     option.GenesisFilename = "AriesTest.txn";
